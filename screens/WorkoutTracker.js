@@ -9,12 +9,15 @@ import {
   Dimensions,
   Keyboard,
   TouchableWithoutFeedback,
+  ScrollView,
+  SafeAreaView,
 } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { getAuth } from 'firebase/auth';
 import { getDatabase, ref, onValue, set, remove } from 'firebase/database';
 import { app } from '../firebase/firebaseConfig';
 import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
+import { exerciseItems } from './sampleItems';
 
 const auth = getAuth(app);
 const database = getDatabase(app);
@@ -28,7 +31,7 @@ const WorkoutTracker = () => {
   const [reps, setReps] = useState('');
   const [weight, setWeight] = useState('');
   const [selectedDayExercises, setSelectedDayExercises] = useState([]);
-  const [categoryList, setCategoryList] = useState(false)
+  const [category, setCategory] = useState(null)
   const [addCategory, setAddCategory] = useState(false)
 
   const userId = auth.currentUser?.uid;
@@ -97,8 +100,8 @@ const WorkoutTracker = () => {
   };
 
 
-  const toggleCategoryList = () => {
-    setCategoryList(!categoryList)
+  const toggleCategory = (name) => {
+    setCategory(name)
   }
 
   const toggleAddCategory = () => {
@@ -106,19 +109,21 @@ const WorkoutTracker = () => {
   }
 
   const data = [
-    'Banana',
-    'Apple',
-    'Orange',
-    'Mango',
-    'Grapes',
-    'Pineapple',
-    'Cherry',
-  ];
+    'dcdcds',
+    'dvdscvsd',
+    'sdvsdv',
+    'sdvcds',
+    'dsvds',
+    'sdvcsdcvsd',
+    'sdcvsdcsd',
+    'sdvsdvsd',
 
-  const sortedData = data.sort((a, b) => a.localeCompare(b));
+  ]
+
+
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <ScrollView>
       <View style={styles.container}>
         <View style={styles.exerciseInputContainer}>
           <Text style={styles.label}>Exercise Name</Text>
@@ -136,12 +141,15 @@ const WorkoutTracker = () => {
             <View style={styles.categoryBtn}>
               <Menu style={{width: '48%'}}>
                 <MenuTrigger style={styles.selectCategoryBtn}>
-                  <Text style={styles.selectCategoryBtnText}>Cate</Text>
+                  <Text style={styles.selectCategoryBtnText}>{category ? category.split('_').join(' ') : 'Full body' }</Text>
                 </MenuTrigger>
                 <MenuOptions>
-                  <MenuOption>
-                    <Text>Hello I am modal</Text>
-                  </MenuOption>
+                  {exerciseItems && Object?.keys(exerciseItems)?.map((item, index)=>(
+                    <MenuOption key={index} style={styles.menuOption} onSelect={()=>toggleCategory(item)}>
+                      <Text style={styles.menuOptionText}>{item}</Text>
+                    </MenuOption>
+                  ))}
+                  
                 </MenuOptions>
               </Menu>
 
@@ -156,13 +164,28 @@ const WorkoutTracker = () => {
                 </MenuOptions>
               </Menu>
             </View>
-
-        
-            <FlatList
-              data={sortedData}
-              keyExtractor={(item) => item}
-              renderItem={({ item }) => <Text style={styles.item}>{item}</Text>}
-            />
+            {category ? 
+              <ScrollView style={{height: 500}}>
+                {exerciseItems?.[category]?.map((item)=>(
+                  <TouchableOpacity style={styles.exerciseListItem} onPress={()=>setExerciseName(item)}>
+                    <Text style={styles.exerciseListItemText}>{item}</Text>
+                    <Text style={styles.exerciseCategory}>{category}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+              :
+                <ScrollView style={{height: 500}}>
+                  {
+                    exerciseItems?.biceps?.map((item, index)=>(
+                      <TouchableOpacity style={styles.exerciseListItem} key={index} onPress={()=>setExerciseName(item)}>
+                        <Text style={styles.exerciseListItemText}>{item}</Text>
+                        <Text style={styles.exerciseCategory}>{category}</Text>
+                      </TouchableOpacity>
+                    ))
+                  }
+                </ScrollView>
+            
+            }
           </View>
 
           <TouchableOpacity style={styles.addButton} onPress={addWorkout}>
@@ -171,11 +194,9 @@ const WorkoutTracker = () => {
         </View>
 
         <Text style={styles.sectionTitle}>Exercises for {selectedDate || 'Select a date'}</Text>
-        <FlatList
-          data={selectedDayExercises}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <View style={styles.workoutItem}>
+        <ScrollView>
+          {selectedDayExercises.map((item, index)=>(
+            <View style={styles.workoutItem} key={index}>
               <Text style={styles.workoutText}>
                 {item.name}: {item.sets} sets x {item.reps} reps @ {item.weight} kg
               </Text>
@@ -183,16 +204,15 @@ const WorkoutTracker = () => {
                 <Text style={styles.deleteButtonText}>Delete</Text>
               </TouchableOpacity>
             </View>
-          )}
-          ListEmptyComponent={<Text style={styles.emptyText}>No exercises logged for this day.</Text>}
-        />
+          ))}
+        </ScrollView>
       </View>
-    </TouchableWithoutFeedback>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff' },
+  container: { flex: 1, backgroundColor: '#ffffff', overflow: 'scroll' },
 
   exerciseInputContainer: { paddingHorizontal: 20, backgroundColor: '#f9f9f9', borderRadius: 16, padding: 15 },
   label: { fontSize: 14, color: '#333', marginBottom: 5 },
@@ -212,9 +232,17 @@ const styles = StyleSheet.create({
 
   selectCategoryBtn: {backgroundColor: '#6c63ff', paddingVertical: 5, borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' , width: '100%'},
   selectCategoryBtnText: {color: 'white', fontWeight: 'bold'},
-
+  
+  menuOption: {paddingHorizontal: 20, paddingVertical: 10},
+  menuOptionText: {fontSize: 16, fontWeight: 'bold'},
+  
   addCategoryBtn: {backgroundColor: '#e6e6e6', paddingHorizontal: 20, paddingVertical: 5, borderRadius: 5,  display: 'flex', alignItems: 'center', justifyContent: 'center' },
   addCategoryBtnText: {color: 'black', fontWeight: 'bold'},
+
+  exerciseList: {marginTop: 12},
+  exerciseListItem: {paddingHorizontal: 20, paddingVertical: 10, marginTop: 6},
+  exerciseListItemText: {fontWeight: 'bold', fontSize: 18},
+  exerciseCategory: {fontSize: 16}
 
 });
 

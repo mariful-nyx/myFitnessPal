@@ -202,13 +202,16 @@ export default function MealLogScreen({ navigation, route }) {
 
     return (
       <View style={styles.categorySection}>
-        <TouchableOpacity
-          style={styles.categoryHeader}
-          onPress={() => setExpandedSection(isExpanded ? null : category)}
-        >
+        <View style={styles.categoryHeader}>
           <Text style={styles.categoryHeaderText}>{category}</Text>
-          <Text style={styles.categoryHeaderText}>ADD FOOD</Text>
-        </TouchableOpacity>
+        
+          <TouchableOpacity
+            style={styles.categoryHeaderBtn}
+            onPress={() => setExpandedSection(isExpanded ? null : category)}
+          >
+            <Text style={styles.categoryHeaderBtnText}>ADD FOOD</Text>
+          </TouchableOpacity>
+        </View>
 
         {isExpanded && (
           <View style={styles.inputContainer}>
@@ -337,12 +340,23 @@ export default function MealLogScreen({ navigation, route }) {
 
         {/* Total Calories and Protein for the Category */}
         <View style={styles.categoryTotalContainer}>
-          <Text style={styles.categoryTotalText}>
-            Total Calories: {totalCalories[category]} cal
-          </Text>
-          <Text style={styles.categoryTotalText}>
-            Total Protein: {totalProtein[category]} g
-          </Text>
+          <View style={styles.categoryTotalSection}>
+            <Text style={styles.categoryTotalKey}>
+              Total Calories: 
+            </Text>
+            <Text style={styles.categoryTotalText}>
+              {totalCalories[category]} cal
+            </Text>
+          </View>
+          <View style={styles.categoryTotalSection}>
+            <Text style={styles.categoryTotalKey}>
+              Total Protein:
+            </Text>
+            <Text style={styles.categoryTotalText}>
+              {totalProtein[category]} g
+            </Text>
+             
+          </View>
         </View>
       </View>
     );
@@ -445,21 +459,31 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
-    padding: 10,
+    padding: 16,
   },
   categoryHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 10,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 8,
+    
   },
   categoryHeaderText: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
+    
   },
+  categoryHeaderBtn: {
+    borderWidth: 1,
+    borderColor:'#6c63ff',
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    borderRadius: 5,
+  },
+
+  categoryHeaderBtnText: {
+    color: '#6c63ff'
+  },  
   searchContainer: {
     flexDirection: 'row',
     marginBottom: 10,
@@ -574,6 +598,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 10,
+  },
+  categoryTotalSection: {
+    display: 'flex', 
+    flexDirection: 'row', 
+    gap: 4
+  },
+  categoryTotalKey:{
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#aaaaaa',
   },
   categoryTotalText: {
     fontSize: 16,

@@ -284,7 +284,7 @@ const ProfileScreen = ({ navigation }) => {
                 handleSave('activityLevel', level);
               }}
             >
-              <Text style={styles.activityText}>{level}</Text>
+              <Text style={[styles.activityText, activityLevel === level && styles.selectedOptionForText]}>{level}</Text>
                 </TouchableOpacity>
               )
             )}
@@ -421,6 +421,10 @@ const styles = StyleSheet.create({
   },
   selectedOption: {
     backgroundColor: '#6200ee',
+    
+  },
+  selectedOptionForText:{
+    color: 'white'
   },
   genderText: {
     color: '#fff',
