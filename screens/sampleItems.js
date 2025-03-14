@@ -93,3 +93,106 @@ export const exerciseItems = {
     ]
   }
   
+
+
+export const stepsSample = {
+  0: [
+      {value: 0, label: '12:00 AM'},
+      {value: 0, label: '1:00 AM'},
+      {value: 0, label: '2:00 AM'},
+      {value: 0, label: '3:00 AM'},
+      {value: 0, label: '4:00 AM'},
+      {value: 20, label: '5:00 AM'},
+      {value: 50, label: '6:00 AM'},
+      {value: 100, label: '7:00 AM'},
+      {value: 150, label: '8:00 AM'},
+      {value: 200, label: '9:00 AM'},
+      {value: 250, label: '10:00 AM'},
+      {value: 300, label: '11:00 AM'},
+      {value: 350, label: '12:00 PM'},
+      {value: 400, label: '1:00 PM'},
+      {value: 450, label: '2:00 PM'},
+      {value: 500, label: '3:00 PM'},
+      {value: 550, label: '4:00 PM'},
+      {value: 600, label: '5:00 PM'},
+      {value: 650, label: '6:00 PM'},
+      {value: 700, label: '7:00 PM'},
+      {value: 750, label: '8:00 PM'},
+      {value: 800, label: '9:00 PM'},
+      {value: 850, label: '10:00 PM'},
+      {value: 900, label: '11:00 PM'}
+    ],
+  1: [
+    { value: 700, label: 'Sat' },
+    { value: 650, label: 'Sun' },
+    { value: 800, label: 'Mon' },
+    { value: 750, label: 'Tue' },
+    { value: 720, label: 'Wed' },
+    { value: 680, label: 'Thu' },
+    { value: 710, label: 'Fri' },
+    { value: 730, label: 'Sat' },
+    { value: 710, label: 'Sun' },
+    { value: 790, label: 'Mon' },
+    { value: 770, label: 'Tue' },
+    { value: 760, label: 'Wed' },
+    { value: 740, label: 'Thu' },
+    { value: 760, label: 'Fri' }
+  ],
+  2: [
+    { "value": 432, "label": 1 },
+    { "value": 450, "label": 2 },
+    { "value": 470, "label": 3 },
+    { "value": 490, "label": 4 },
+    { "value": 510, "label": 5 },
+    { "value": 530, "label": 6 },
+    { "value": 550, "label": 7 },
+    { "value": 570, "label": 8 },
+    { "value": 590, "label": 9 },
+    { "value": 610, "label": 10 },
+    { "value": 630, "label": 11 },
+    { "value": 650, "label": 12 },
+    { "value": 670, "label": 13 },
+    { "value": 690, "label": 14 },
+    { "value": 710, "label": 15 },
+    { "value": 730, "label": 16 },
+    { "value": 750, "label": 17 },
+    { "value": 770, "label": 18 },
+    { "value": 790, "label": 19 },
+    { "value": 810, "label": 20 },
+    { "value": 830, "label": 21 },
+    { "value": 850, "label": 22 },
+    { "value": 870, "label": 23 },
+    { "value": 890, "label": 24 },
+    { "value": 910, "label": 25 },
+    { "value": 930, "label": 26 },
+    { "value": 950, "label": 27 },
+    { "value": 970, "label": 28 },
+    { "value": 990, "label": 29 },
+    { "value": 1010, "label": 30 }
+  ],
+  3: [
+    { "value": 432, "label": "Jan" },
+    { "value": 480, "label": "Feb" },
+    { "value": 530, "label": "Mar" },
+    { "value": 580, "label": "Apr" },
+    { "value": 630, "label": "May" },
+    { "value": 680, "label": "Jun" }
+  ],
+  4: [
+    { "value": 432, "label": "Jan" },
+    { "value": 480, "label": "Feb" },
+    { "value": 530, "label": "Mar" },
+    { "value": 580, "label": "Apr" },
+    { "value": 630, "label": "May" },
+    { "value": 680, "label": "Jun" },
+    { "value": 730, "label": "Jul" },
+    { "value": 780, "label": "Aug" },
+    { "value": 830, "label": "Sep" },
+    { "value": 880, "label": "Oct" },
+    { "value": 930, "label": "Nov" },
+    { "value": 980, "label": "Dec" }
+  ]
+  
+  
+  
+}

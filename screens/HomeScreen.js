@@ -9,12 +9,17 @@ import {
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
-import { LineChart } from 'react-native-chart-kit';
+import { BarChart, LineChart } from 'react-native-chart-kit';
 import { Pedometer } from 'expo-sensors';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { getDatabase, ref, set, onValue, get } from 'firebase/database'; // Import Firebase Realtime Database functions
 import { getAuth } from 'firebase/auth';
 import { app } from '../firebase/firebaseConfig';
+import { BarChart as BarChartRNG } from "react-native-gifted-charts";
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
+import { stepsSample } from './sampleItems';
+
+
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -31,7 +36,12 @@ const HomeScreen = ({ route }) => {
   const [customCalories, setCustomCalories] = useState('');
   const [bmr, setBmr] = useState(0);
   const [goalCalories, setGoalCalories] = useState(0);
+  const [selectedIndexStep, setSelectedIndexStep] = useState(0)
+  const [selectedIndexCalories, setSelectedIndexCalories] = useState(0)
+
   
+
+
   // Weekly data states
   const [dailyStepsData, setDailyStepsData] = useState({
     Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0, Sun: 0
@@ -245,7 +255,7 @@ const HomeScreen = ({ route }) => {
     backgroundGradientFrom: '#f8f9fd',
     backgroundGradientTo: '#f8f9fd',
     decimalPlaces: 0,
-    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    color: (opacity = 1) => `rgba(130, 40, 50, ${opacity})`,
     labelColor: (opacity = 1) => `rgba(102, 102, 102, ${opacity})`,
     style: {
       borderRadius: 16,
@@ -255,6 +265,7 @@ const HomeScreen = ({ route }) => {
       strokeWidth: '2',
       stroke: '#36A2EB',
     },
+  
   };
 
   // Add this useEffect to fetch the user's name
@@ -290,6 +301,30 @@ const HomeScreen = ({ route }) => {
       </View>
     );
   }
+
+
+
+  console.log(graphData[graphType].datasets[0].data.map(val => val || 0), "--------------")
+
+  let barData = {
+    0: [
+      {value: 250, label: 'M'},
+      {value: 500, label: 'T'},
+      {value: 745, label: 'W'},
+      {value: 320, label: 'T'},
+      {value: 600, label: 'F'},
+      {value: 256, label: 'S'},
+    ],
+    1: [
+      {value: 24, label: 'M'},
+      {value: 143, label: 'T'},
+      {value: 232, label: 'W'},
+      {value: 642, label: 'T'},
+      {value: 124, label: 'F'},
+      {value: 213, label: 'S'},
+    ]
+  }
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -339,37 +374,40 @@ const HomeScreen = ({ route }) => {
           <Text style={styles.boxValue}>{caloriesConsumed} cal</Text>
         </View>
       </View>
+        
 
-      {/* Dynamic Graph Section */}
       <View style={styles.graphContainer}>
         <Text style={styles.graphTitle}>Daily {graphType}</Text>
         {graphData[graphType]?.datasets?.[0]?.data?.length > 0 ? (
-          <LineChart
-            data={{
-              labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-              datasets: [{
-                data: graphData[graphType].datasets[0].data.map(val => val || 0),
-                color: graphData[graphType].datasets[0].color,
-                strokeWidth: 2
-              }]
-            }}
-            width={screenWidth - 40}
-            height={250}
-            chartConfig={{
-              ...chartConfig,
-              fillShadowGradientFrom: '#fff',
-              fillShadowGradientTo: '#fff',
-              decimalPlaces: 0,
-              formatYLabel: (value) => Math.round(value).toString(),
-            }}
-            style={styles.chart}
-            bezier
-            withDots={true}
-            withInnerLines={true}
-            withOuterLines={true}
-            withVerticalLines={true}
-            withHorizontalLines={true}
-          />
+          <>
+           <SegmentedControl
+              values={['D', 'w', 'M', '3M', 'Y']}
+              selectedIndex={selectedIndexStep}
+              onChange={(event) => {
+                setSelectedIndexStep(event.nativeEvent.selectedSegmentIndex);
+              }}
+              style={{marginVertical: 10}}
+            />
+            <BarChartRNG
+              key={selectedIndexStep}
+              data={stepsSample[selectedIndexStep]}
+              backgroundColor='white'
+              height={250}
+              // width={}
+              barWidth={10}
+              barBorderRadius={5}
+              spacing={20}
+              noOfSections={4}
+              xAxisThickness={0}
+              yAxisThickness={0}
+              xAxisLabelTextStyle={{color: 'gray'}}
+              yAxisLabelTextStyle={{color: 'gray'}}
+              isAnimated
+              animationDuration={500}
+              frontColor={'#00ec61'}
+            />
+           
+          </>
         ) : (
           <View style={styles.noDataContainer}>
             <Text style={styles.noDataText}>No data available</Text>
@@ -377,24 +415,47 @@ const HomeScreen = ({ route }) => {
         )}
       </View>
 
-      {/* Set Goal Section */}
-      <View style={styles.setGoalContainer}>
-        <Text style={styles.setGoalTitle}>Adjust Your Calorie Goal</Text>
-        <Text style={styles.recommendationText}>
-          Current BMR: {bmr} kcal
-        </Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter custom calories"
-          placeholderTextColor="#999"
-          keyboardType="numeric"
-          value={customCalories}
-          onChangeText={setCustomCalories}
-        />
-        <TouchableOpacity style={styles.setGoalButton} onPress={updateGoalCalories}>
-          <Text style={styles.setGoalButtonText}>Set Goal</Text>
-        </TouchableOpacity>
+      
+      <View style={styles.graphContainer}>
+        <Text style={styles.graphTitle}>Daily Calories Burned</Text>
+        {graphData[graphType]?.datasets?.[0]?.data?.length > 0 ? (
+          <>
+           <SegmentedControl
+              values={['D', 'w', 'M', '3M', 'Y']}
+              selectedIndex={selectedIndexCalories}
+              onChange={(event) => {
+                setSelectedIndexCalories(event.nativeEvent.selectedSegmentIndex);
+              }}
+              style={{marginVertical: 10}}
+            />
+            <BarChartRNG
+              key={selectedIndexCalories}
+              data={stepsSample[selectedIndexCalories]}
+              backgroundColor='white'
+              height={250}
+            
+              barWidth={10}
+              barBorderRadius={5}
+              spacing={20}
+              noOfSections={4}
+              xAxisThickness={0}
+              yAxisThickness={0}
+              xAxisLabelTextStyle={{color: 'gray'}}
+              yAxisLabelTextStyle={{color: 'gray'}}
+              isAnimated
+              animationDuration={500}
+              frontColor={'#ff911b'}
+            />
+           
+          </>
+        ) : (
+          <View style={styles.noDataContainer}>
+            <Text style={styles.noDataText}>No data available</Text>
+          </View>
+        )}
       </View>
+
+
     </ScrollView>
   );
 };
@@ -484,7 +545,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffe0b2',
   },
   graphContainer: {
-    width: screenWidth - 40,
+    flex: 1,
+    // left: 5,
+    // right: 5,
+    width: screenWidth-40,
     backgroundColor: '#ffffff',
     borderRadius: 16,
     padding: 20,
@@ -494,6 +558,8 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
     elevation: 4,
+    paddingHorizontal: 50,
+    overflow: 'hidden'
   },
   graphTitle: {
     fontSize: 18,
@@ -503,6 +569,13 @@ const styles = StyleSheet.create({
   },
   chart: {
     borderRadius: 16,
+    // width: screenWidth-40,
+    padding: 0,
+    margin: 0,
+    paddingRight: 0,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   graphButtonsContainer: {
     flexDirection: 'row',
