@@ -166,8 +166,8 @@ const WorkoutTracker = () => {
             </View>
             {category ? 
               <ScrollView style={{height: 500}}>
-                {exerciseItems?.[category]?.map((item)=>(
-                  <TouchableOpacity style={styles.exerciseListItem} onPress={()=>setExerciseName(item)}>
+                {exerciseItems?.[category]?.map((item, index)=>(
+                  <TouchableOpacity key={index} style={styles.exerciseListItem} onPress={()=>setExerciseName(item)}>
                     <Text style={styles.exerciseListItemText}>{item}</Text>
                     <Text style={styles.exerciseCategory}>{category}</Text>
                   </TouchableOpacity>

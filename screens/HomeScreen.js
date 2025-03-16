@@ -326,6 +326,40 @@ const HomeScreen = ({ route }) => {
   }
 
 
+  const getWidthSpace = () => {
+    let barWidth = 0
+    let spacing = 0
+    
+    // for days
+    if (selectedIndexStep === 0) {
+      barWidth = 6
+      spacing = 6
+      return {barWidth: barWidth, spacing: spacing}
+
+    } else if (selectedIndexStep === 1) { // for weeks
+      barWidth = 25
+      spacing = 20
+      return {barWidth: barWidth, spacing: spacing}
+
+    } else if (selectedIndexStep === 2) { // for per month
+      barWidth = 5
+      spacing = 5
+      return {barWidth: barWidth, spacing: spacing}
+
+    } else if (selectedIndexStep === 3) { // for 6 months
+      barWidth = 25
+      spacing = 22
+      return {barWidth: barWidth, spacing: spacing}
+
+    } else if (selectedIndexStep === 4) { // for one year
+      barWidth = 15
+      spacing = 10
+      return {barWidth: barWidth, spacing: spacing}
+    } 
+  }
+
+
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* Header Section */}
@@ -377,31 +411,37 @@ const HomeScreen = ({ route }) => {
         
 
       <View style={styles.graphContainer}>
+      
         <Text style={styles.graphTitle}>Daily {graphType}</Text>
-        {graphData[graphType]?.datasets?.[0]?.data?.length > 0 ? (
-          <>
-           <SegmentedControl
-              values={['D', 'w', 'M', '3M', 'Y']}
+          <View style={{width: '100%', height: 50, justifyContent: 'center', paddingVertical:6}}>
+            <SegmentedControl
+              values={['D', 'w', 'M', '6M', 'Y']}
               selectedIndex={selectedIndexStep}
               onChange={(event) => {
                 setSelectedIndexStep(event.nativeEvent.selectedSegmentIndex);
               }}
               style={{marginVertical: 10}}
             />
+          </View>
+          
+        {graphData[graphType]?.datasets?.[0]?.data?.length > 0 ? (
+          <>
+           
             <BarChartRNG
               key={selectedIndexStep}
               data={stepsSample[selectedIndexStep]}
               backgroundColor='white'
               height={250}
-              // width={}
-              barWidth={10}
+              width={screenWidth-50}
+              barWidth={getWidthSpace().barWidth}
               barBorderRadius={5}
-              spacing={20}
+              spacing={getWidthSpace().spacing}
               noOfSections={4}
               xAxisThickness={0}
               yAxisThickness={0}
-              xAxisLabelTextStyle={{color: 'gray'}}
-              yAxisLabelTextStyle={{color: 'gray'}}
+              xAxisLabelTextStyle={{color: 'gray', fontSize: 11}}
+              yAxisLabelTextStyle={{color: 'gray', fontSize: 10}}
+              
               isAnimated
               animationDuration={500}
               frontColor={'#00ec61'}
@@ -421,7 +461,7 @@ const HomeScreen = ({ route }) => {
         {graphData[graphType]?.datasets?.[0]?.data?.length > 0 ? (
           <>
            <SegmentedControl
-              values={['D', 'w', 'M', '3M', 'Y']}
+              values={['D', 'w', 'M', '6M', 'Y']}
               selectedIndex={selectedIndexCalories}
               onChange={(event) => {
                 setSelectedIndexCalories(event.nativeEvent.selectedSegmentIndex);
@@ -434,17 +474,18 @@ const HomeScreen = ({ route }) => {
               backgroundColor='white'
               height={250}
             
-              barWidth={10}
+              barWidth={getWidthSpace().barWidth}
               barBorderRadius={5}
-              spacing={20}
+              spacing={getWidthSpace().spacing}
               noOfSections={4}
               xAxisThickness={0}
               yAxisThickness={0}
-              xAxisLabelTextStyle={{color: 'gray'}}
+              xAxisLabelTextStyle={{color: 'gray', fontSize: 11}}
               yAxisLabelTextStyle={{color: 'gray'}}
               isAnimated
               animationDuration={500}
               frontColor={'#ff911b'}
+
             />
            
           </>
@@ -546,19 +587,19 @@ const styles = StyleSheet.create({
   },
   graphContainer: {
     flex: 1,
-    // left: 5,
+    left: 0,
     // right: 5,
     width: screenWidth-40,
     backgroundColor: '#ffffff',
     borderRadius: 16,
-    padding: 20,
+    padding: 10,
     marginVertical: 20,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
     elevation: 4,
-    paddingHorizontal: 50,
+    paddingHorizontal: 8,
     overflow: 'hidden'
   },
   graphTitle: {
