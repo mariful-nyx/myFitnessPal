@@ -326,32 +326,32 @@ const HomeScreen = ({ route }) => {
   }
 
 
-  const getWidthSpace = () => {
+  const getWidthSpace = (chartTypeIndex) => {
     let barWidth = 0
     let spacing = 0
     
     // for days
-    if (selectedIndexStep === 0) {
+    if (chartTypeIndex === 0) {
       barWidth = 6
       spacing = 6
       return {barWidth: barWidth, spacing: spacing}
 
-    } else if (selectedIndexStep === 1) { // for weeks
+    } else if (chartTypeIndex === 1) { // for weeks
       barWidth = 25
       spacing = 20
       return {barWidth: barWidth, spacing: spacing}
 
-    } else if (selectedIndexStep === 2) { // for per month
+    } else if (chartTypeIndex === 2) { // for per month
       barWidth = 5
       spacing = 5
       return {barWidth: barWidth, spacing: spacing}
 
-    } else if (selectedIndexStep === 3) { // for 6 months
+    } else if (chartTypeIndex === 3) { // for 6 months
       barWidth = 25
       spacing = 22
       return {barWidth: barWidth, spacing: spacing}
 
-    } else if (selectedIndexStep === 4) { // for one year
+    } else if (chartTypeIndex === 4) { // for one year
       barWidth = 15
       spacing = 10
       return {barWidth: barWidth, spacing: spacing}
@@ -433,9 +433,9 @@ const HomeScreen = ({ route }) => {
               backgroundColor='white'
               height={250}
               width={screenWidth-50}
-              barWidth={getWidthSpace().barWidth}
+              barWidth={getWidthSpace(selectedIndexStep).barWidth}
               barBorderRadius={5}
-              spacing={getWidthSpace().spacing}
+              spacing={getWidthSpace(selectedIndexStep).spacing}
               noOfSections={4}
               xAxisThickness={0}
               yAxisThickness={0}
@@ -474,9 +474,9 @@ const HomeScreen = ({ route }) => {
               backgroundColor='white'
               height={250}
             
-              barWidth={getWidthSpace().barWidth}
+              barWidth={getWidthSpace(selectedIndexCalories).barWidth}
               barBorderRadius={5}
-              spacing={getWidthSpace().spacing}
+              spacing={getWidthSpace(selectedIndexCalories).spacing}
               noOfSections={4}
               xAxisThickness={0}
               yAxisThickness={0}
