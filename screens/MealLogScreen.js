@@ -14,6 +14,7 @@ import { getAuth } from 'firebase/auth';
 import { app } from '../firebase/firebaseConfig';
 import axios from 'axios';
 import { EDAMAM_APP_ID, EDAMAM_API_KEY } from '@env';
+import { Calendar } from 'react-native-calendars';
 
 const auth = getAuth(app);
 const screenWidth = Dimensions.get('window').width;
@@ -369,27 +370,24 @@ export default function MealLogScreen({ navigation, route }) {
       ListHeaderComponent={
         <>
           {/* Day Selector */}
-          <View style={styles.daySelector}>
-            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, index) => (
-              <TouchableOpacity
-                key={index}
-                style={[
-                  styles.dayButton,
-                  selectedDay === index && styles.selectedDayButton,
-                ]}
-                onPress={() => setSelectedDay(index)}
-              >
-                <Text
-                  style={[
-                    styles.dayButtonText,
-                    selectedDay === index && styles.selectedDayButtonText,
-                  ]}
-                >
-                  {day}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+
+            <View style={styles.calendarContainer}>
+              <Calendar
+                onDayPress={(day) => setSelectedDay(day.dateString)}
+                markedDates={{
+                  [selectedDay]: { selected: true, selectedColor: '#6c63ff' },
+                }}
+                theme={{
+                  todayTextColor: '#6c63ff',
+                  arrowColor: '#6c63ff',
+                  selectedDayBackgroundColor: '#6c63ff',
+                  selectedDayTextColor: '#ffffff',
+                }}
+                // style={styles.calendar}
+                style={{marginLeft: 0, paddingLeft: 0, marginLeft: -20}}
+              />
+            </View>
+
 
           {/* Collapsible Sections */}
           {renderCategorySection('Breakfast')}
@@ -614,6 +612,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
   },
+  calendarContainer: { width: screenWidth-30, marginHorizontal: 10, paddingHorizontal: 0, borderRadius: 16 },
+
   dayTotalContainer: {
     marginTop: 20,
     padding: 15,

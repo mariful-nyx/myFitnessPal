@@ -20,6 +20,10 @@ import LoginScreen from '../screens/LoginScreen';
 import SignupScreen from '../screens/SignupScreen';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
 import SavedMealsScreen from '../screens/SavedMealsScreen';
+import AddTemplateScreen from '../screens/AddTemplateScreen';
+import TemplateViewScreen from '../screens/TemplateViewScreen';
+import ExerciseViewScreen from '../screens/ExerciseViewScreen';
+import StartWorkoutModal from '../screens/StartWorkoutModal';
 
 // Create navigators
 const Stack = createStackNavigator();
@@ -132,12 +136,32 @@ export default function Navigation() {
     <NavigationContainer>
       <Stack.Navigator>
         {isLoggedIn ? (
-          <Stack.Screen name="MainApp" component={BottomTabs} options={{ headerShown: false }} />
+          <>
+            <Stack.Screen name="MainApp" component={BottomTabs} options={{ headerShown: false }} />
+            <Stack.Group screenOptions={{presentation: 'card'}}>
+              <Stack.Screen name='AddTemplate' component={AddTemplateScreen} options={{title: 'Add Template'}}/>
+              <Stack.Screen name='ExerciseView' component={ExerciseViewScreen} options={({route})=>({title: route.params?.name})} />
+              
+            </Stack.Group>
+            <Stack.Group screenOptions={{presentation: 'modal'}}>
+              <Stack.Screen 
+                name='TemplateView' 
+                component={TemplateViewScreen} 
+                options={({route})=>({title: route.params?.name || 'Template View'})} 
+              />
+              <Stack.Screen 
+                name='StartWorkout' 
+                component={StartWorkoutModal} 
+                options={{headerShown: false}} 
+              />
+            </Stack.Group>
+          </>
         ) : (
           <>
             <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
             <Stack.Screen name="Signup" component={SignupScreen} options={{ headerShown: false }} />
             <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} options={{ headerShown: false }} />
+            
           </>
         )}
       </Stack.Navigator>
