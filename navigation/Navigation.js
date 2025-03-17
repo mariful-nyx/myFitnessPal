@@ -20,10 +20,9 @@ import LoginScreen from '../screens/LoginScreen';
 import SignupScreen from '../screens/SignupScreen';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
 import SavedMealsScreen from '../screens/SavedMealsScreen';
-import AddTemplateScreen from '../screens/AddTemplateScreen';
-import TemplateViewScreen from '../screens/TemplateViewScreen';
 import ExerciseViewScreen from '../screens/ExerciseViewScreen';
 import StartWorkoutModal from '../screens/StartWorkoutModal';
+import AddExercise from '../screens/AddExercise';
 
 // Create navigators
 const Stack = createStackNavigator();
@@ -139,16 +138,12 @@ export default function Navigation() {
           <>
             <Stack.Screen name="MainApp" component={BottomTabs} options={{ headerShown: false }} />
             <Stack.Group screenOptions={{presentation: 'card'}}>
-              <Stack.Screen name='AddTemplate' component={AddTemplateScreen} options={{title: 'Add Template'}}/>
+              <Stack.Screen name='AddTemplate' component={AddExercise} options={{title: 'Add Exercise'}}/>
               <Stack.Screen name='ExerciseView' component={ExerciseViewScreen} options={({route})=>({title: route.params?.name})} />
               
             </Stack.Group>
             <Stack.Group screenOptions={{presentation: 'modal'}}>
-              <Stack.Screen 
-                name='TemplateView' 
-                component={TemplateViewScreen} 
-                options={({route})=>({title: route.params?.name || 'Template View'})} 
-              />
+
               <Stack.Screen 
                 name='StartWorkout' 
                 component={StartWorkoutModal} 

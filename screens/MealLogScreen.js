@@ -39,7 +39,7 @@ export default function MealLogScreen({ navigation, route }) {
 
   const userId = auth.currentUser?.uid; // Replace with the actual user ID (e.g., from Firebase Auth)
   const date = new Date().toISOString().split('T')[0]; // Current date in YYYY-MM-DD format
-  const day = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][selectedDay]; // Selected day
+
 
   // Calculate total calories and protein for the day
   const totalCaloriesForDay = Object.values(totalCalories).reduce((sum, cal) => sum + cal, 0);
@@ -51,7 +51,7 @@ export default function MealLogScreen({ navigation, route }) {
     const categories = ['Breakfast', 'Lunch', 'Dinner', 'Snacks'];
 
     categories.forEach((category) => {
-      const mealsRef = ref(db, `users/${userId}/mealLogs/${date}_${day}/${category}/meals`);
+      const mealsRef = ref(db, `users/${userId}/mealLogs/${date}_${selectedDay}/${category}/meals`);
       onValue(mealsRef, (snapshot) => {
         const fetchedMeals = [];
         snapshot.forEach((childSnapshot) => {
@@ -67,20 +67,20 @@ export default function MealLogScreen({ navigation, route }) {
         setTotalProtein((prev) => ({ ...prev, [category]: totalProt }));
 
         // Save total calories and protein to Firebase
-        const totalCaloriesRef = ref(db, `users/${userId}/mealLogs/${date}_${day}/${category}/totalCalories`);
-        const totalProteinRef = ref(db, `users/${userId}/mealLogs/${date}_${day}/${category}/totalProtein`);
+        const totalCaloriesRef = ref(db, `users/${userId}/mealLogs/${date}_${selectedDay}/${category}/totalCalories`);
+        const totalProteinRef = ref(db, `users/${userId}/mealLogs/${date}_${selectedDay}/${category}/totalProtein`);
         set(totalCaloriesRef, totalCal);
         set(totalProteinRef, totalProt);
       });
     });
 
     // Save total calories and protein for the day to Firebase
-    const totalDayRef = ref(db, `users/${userId}/mealLogs/${date}_${day}`);
+    const totalDayRef = ref(db, `users/${userId}/mealLogs/${date}_${selectedDay}`);
     update(totalDayRef, {
       totalCalories: totalCaloriesForDay,
       totalProtein: totalProteinForDay,
     });
-  }, [selectedDay, userId, date, day, totalCaloriesForDay, totalProteinForDay]);
+  }, [selectedDay, userId, date, selectedDay, totalCaloriesForDay, totalProteinForDay]);
 
   // Search for food items using Edamam API
   const searchFood = async () => {
@@ -128,7 +128,7 @@ export default function MealLogScreen({ navigation, route }) {
   // Save meal to Realtime Database under the specified category
   const saveMealToDatabase = async (meal, category) => {
     const db = getDatabase();
-    const mealsRef = ref(db, `users/${userId}/mealLogs/${date}_${day}/${category}/meals`);
+    const mealsRef = ref(db, `users/${userId}/mealLogs/${date}_${selectedDay}/${category}/meals`);
     const newMealRef = push(mealsRef);
     await set(newMealRef, meal);
   };
@@ -136,14 +136,14 @@ export default function MealLogScreen({ navigation, route }) {
   // Update meal in Realtime Database
   const updateMealInDatabase = async (mealId, updatedMeal, category) => {
     const db = getDatabase();
-    const mealRef = ref(db, `users/${userId}/mealLogs/${date}_${day}/${category}/meals/${mealId}`);
+    const mealRef = ref(db, `users/${userId}/mealLogs/${date}_${selectedDay}/${category}/meals/${mealId}`);
     await update(mealRef, updatedMeal);
   };
 
   // Delete meal from Realtime Database
   const deleteMeal = async (mealId, category) => {
     const db = getDatabase();
-    const mealRef = ref(db, `users/${userId}/mealLogs/${date}_${day}/${category}/meals/${mealId}`);
+    const mealRef = ref(db, `users/${userId}/mealLogs/${date}_${selectedDay}/${category}/meals/${mealId}`);
     await remove(mealRef);
   };
 
@@ -196,6 +196,7 @@ export default function MealLogScreen({ navigation, route }) {
     setServingSize(String(meal.servingSize));
     setExpandedSection(category); // Expand the section
   };
+
 
   // Render the collapsible section for each category
   const renderCategorySection = (category) => {
@@ -377,6 +378,7 @@ export default function MealLogScreen({ navigation, route }) {
                 markedDates={{
                   [selectedDay]: { selected: true, selectedColor: '#6c63ff' },
                 }}
+                
                 theme={{
                   todayTextColor: '#6c63ff',
                   arrowColor: '#6c63ff',

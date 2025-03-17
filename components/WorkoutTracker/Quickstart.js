@@ -33,7 +33,7 @@ const Quickstart = ({navigation}) => {
       <Text>Quickstart</Text>
       <View style={styles.templateSection}>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <Text style={styles.heading}>Templates</Text>
+          <Text style={styles.heading}>Workout</Text>
 
           <View style={{ flexDirection: "row", gap: 12 }}>
             <TouchableOpacity onPress={() => navigation.navigate('AddTemplate')}>
@@ -60,38 +60,10 @@ const Quickstart = ({navigation}) => {
           </View>
         </View>
 
-        <View style={{ marginTop: 20 }}>
-          <Text style={{ color: "gray", fontSize: 20, fontWeight: "bold" }}>
-            MyTemplates
-          </Text>
-          <View
-            style={{
-              marginTop: 12,
-              flexDirection: "row",
-              flexWrap: "wrap",
-              gap: 12,
-            }}
-          >
-            {templates?.map((item, index) => (
-              <TouchableOpacity
-                key={index}
-                style={{
-                  borderWidth: 1,
-                  borderRadius: 5,
-                  borderColor: "#e6e6e6",
-                  padding: 12,
-                  width: screenWidth / 2 - 27,
-                }}
-              >
-                <Text>{item}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
 
         <View style={{ marginTop: 20 }}>
           <Text style={{ color: "gray", fontSize: 20, fontWeight: "bold" }}>
-            Previous{" "}
+            Saved workout{" "}
           </Text>
           <View
             style={{
@@ -111,7 +83,7 @@ const Quickstart = ({navigation}) => {
                   padding: 12,
                   width: screenWidth / 2 - 27,
                 }}
-                onPress={()=>navigation.navigate('TemplateView', { name: 'Leg' })}
+                onPress={()=>navigation.navigate('StartWorkout', { name: 'Leg' })}
               >
                 <Text>{item}</Text>
               </TouchableOpacity>
