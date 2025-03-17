@@ -4,9 +4,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 
 
-const AddTemplateScreen = () => {
-  const [template, setTemplate] = useState();
-  console.log(template)
+const AddExercise = () => {
+  const [exercise, setExercise] = useState();
+
   const {goBack} = useNavigation()
 
   return (
@@ -15,27 +15,13 @@ const AddTemplateScreen = () => {
         
         <TextInput
           style={styles.input}
-          placeholder="Template name"
+          placeholder="Enter Exercise name"
           keyboardType="ascii-capable"
-          value={template}
-          onChangeText={setTemplate}
+          value={exercise}
+          onChangeText={setExercise}
         />
       </View>
 
-      <TouchableOpacity 
-        onPress={()=>null} 
-        style={{
-          paddingVertical: 10,
-          paddingHorizontal: 8,
-          height: 40,
-          borderRadius: 5,
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginTop: 10
-        }}
-      >
-        <Text style={{color: '#6c63ff', fontWeight: 'bold'}}>Add Exercise</Text>
-      </TouchableOpacity>
 
       <TouchableOpacity
         onPress={() => goBack()}
@@ -56,7 +42,7 @@ const AddTemplateScreen = () => {
   );
 };
 
-export default AddTemplateScreen;
+export default AddExercise;
 
 const styles = StyleSheet.create({
   input: {

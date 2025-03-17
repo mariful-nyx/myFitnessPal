@@ -441,7 +441,9 @@ const HomeScreen = ({ route }) => {
               yAxisThickness={0}
               xAxisLabelTextStyle={{color: 'gray', fontSize: 11}}
               yAxisLabelTextStyle={{color: 'gray', fontSize: 10}}
-              
+              chartConfig={{
+                yAxisLabelInterval: 8, // This controls the interval between the y-axis labels
+              }}
               isAnimated
               animationDuration={500}
               frontColor={'#00ec61'}
@@ -473,7 +475,7 @@ const HomeScreen = ({ route }) => {
               data={stepsSample[selectedIndexCalories]}
               backgroundColor='white'
               height={250}
-            
+              width={screenWidth-50}
               barWidth={getWidthSpace(selectedIndexCalories).barWidth}
               barBorderRadius={5}
               spacing={getWidthSpace(selectedIndexCalories).spacing}

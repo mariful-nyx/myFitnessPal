@@ -152,11 +152,8 @@ const StartWorkoutModal = () => {
         </View>
 
 
-        <View style={{marginTop: 20}}>
+        <View style={{marginTop: 10}}>
 
-          <TouchableOpacity onPress={()=>null} style={styles.outlineBtn}>
-            <Text style={{color: '#6c63ff'}}>Add Exercise</Text>
-          </TouchableOpacity>
 
           <TouchableOpacity onPress={()=>navigation.goBack()} style={[styles.dangerBtn, {marginTop: 20}]}>
             <Text style={{color: 'red'}}>Cancel workout</Text>
