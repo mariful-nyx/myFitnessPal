@@ -447,6 +447,23 @@ const HomeScreen = ({ route }) => {
               isAnimated
               animationDuration={500}
               frontColor={'#00ec61'}
+              renderTooltip={(item, index) => {
+                return (
+                  <View
+                    style={{
+                      marginBottom: -10,
+                      marginLeft: -6,
+                      backgroundColor: '#ff911b',
+                      paddingHorizontal: 6,
+                      paddingVertical: 4,
+                      borderRadius: 4,
+                      borderColor: 'white',
+                      borderWidth:1
+                    }}>
+                    <Text style={{color: 'white', fontWeight: 'bold', fontSize: 16}}>Steps: {item.value}</Text>
+                  </View>
+                );
+              }}
             />
            
           </>
@@ -487,7 +504,23 @@ const HomeScreen = ({ route }) => {
               isAnimated
               animationDuration={500}
               frontColor={'#ff911b'}
-
+              renderTooltip={(item, index) => {
+                return (
+                  <View
+                    style={{
+                      marginBottom: -10,
+                      marginLeft: -6,
+                      backgroundColor: '#00ec61',
+                      paddingHorizontal: 6,
+                      paddingVertical: 4,
+                      borderRadius: 4,
+                      borderColor: 'white',
+                      borderWidth:1
+                    }}>
+                    <Text style={{color: 'white', fontWeight: 'bold', fontSize: 16}}>Steps: {item.value}</Text>
+                  </View>
+                );
+              }}
             />
            
           </>

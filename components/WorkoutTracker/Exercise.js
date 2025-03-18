@@ -11,29 +11,37 @@ import {
   TouchableWithoutFeedback,
   ScrollView,
   SafeAreaView,
+  Alert,
 } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { getAuth } from 'firebase/auth';
-import { getDatabase, ref, onValue, set, remove } from 'firebase/database';
+import { getDatabase, ref, onValue, set, remove, get } from 'firebase/database';
 import { app } from '../../firebase/firebaseConfig';
 import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
 import { exerciseItems } from '../../screens/sampleItems';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import { useNavigation } from '@react-navigation/native';
 
-const auth = getAuth(app);
-const database = getDatabase(app);
 
-const screenWidth = Dimensions.get('window').width;
+
+
 
 const Exercise = () => {
+  const navigation = useNavigation()
   const [selectedDate, setSelectedDate] = useState("");
   const [exerciseName, setExerciseName] = useState("");
   const [sets, setSets] = useState("");
   const [reps, setReps] = useState("");
   const [weight, setWeight] = useState("");
-  const [selectedDayExercises, setSelectedDayExercises] = useState([]);
+  const [selectedExercises, setSelectedExercises] = useState([]);
   const [category, setCategory] = useState(null);
   const [addCategory, setAddCategory] = useState(false);
 
+
+  const auth = getAuth(app);
+  const database = getDatabase(app);
+
+  const screenWidth = Dimensions.get('window').width;
   const userId = auth.currentUser?.uid;
 
   useEffect(() => {
@@ -123,6 +131,57 @@ const Exercise = () => {
     setAddCategory(!addCategory);
   };
 
+  const handleSelectExercise = (exercise) => {
+    setSelectedExercises((prev) => {
+      // Check if the exercise is already selected
+      if (prev.includes(exercise)) {
+        // If selected, remove it
+        return prev.filter((item) => item !== exercise);
+      } else {
+        // If not selected, add it
+        return [...prev, exercise];
+      }
+    });
+  };
+
+  const saveExerciseData = async () => {
+      if (!userId) return;
+      
+      try {
+        const db = getDatabase();
+        const exerciseRef = ref(db, `users/${userId}/exercises/`);
+        
+        try{
+  
+            const snapshot = await get(exerciseRef);
+  
+            const existingExercises = snapshot.exists() ? snapshot.val() : [];
+  
+            // Add the new exercise to the existing list
+            const updatedExercises = [...existingExercises, ...selectedExercises];
+  
+            // Save the updated list of exercises
+            await set(exerciseRef, updatedExercises);
+            setSelectedExercises([])
+            Alert.alert('Success', 'Exercises saved successfully!');
+            
+  
+        } catch {
+          await set(exerciseRef, [...selectedExercises]);
+          setSelectedExercises([])
+          Alert.alert('Success', 'Exercises saved successfully!');
+        }
+        
+        
+      } catch (error) {
+        console.error('Error saving Exercises:', error);
+        Alert.alert('Error', 'Failed to save Exercises data');
+      }
+    };
+  
+
+  console.log(selectedExercises, "-----------")
+
 
   return (
     <View>
@@ -160,18 +219,34 @@ const Exercise = () => {
               </MenuOptions>
             </Menu>
           </View>
+          <View style={{width: '100%', flexDirection: 'row',  justifyContent: 'flex-end', paddingVertical: 5}}>
+            {selectedExercises.length > 0 && 
+              <Text style={{color: '#6c63ff', fontWeight: 'bold'}}>Add {selectedExercises.length}</Text>
+            }
+          </View>
+          
           {category ? (
             <ScrollView style={{ height: 500 }}>
-              {exerciseItems?.[category]?.map((item, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={styles.exerciseListItem}
-                  onPress={() => setExerciseName(item)}
-                >
-                  <Text style={styles.exerciseListItemText}>{item}</Text>
-                  <Text style={styles.exerciseCategory}>{category}</Text>
-                </TouchableOpacity>
-              ))}
+              {exerciseItems?.[category]?.map((item, index) => {
+                console.log(selectedExercises[item])
+                return(
+                  <View key={index} style={[{ marginTop: 4, paddingRight:12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'} ,selectedExercises.includes(item) ? {backgroundColor: '#6c63ff', borderRadius: 5} : {}]}>
+                    <TouchableOpacity
+                      
+                      style={[styles.exerciseListItem]}
+                      onPress={() => handleSelectExercise(item)}
+                    >
+                      <View>
+                        <Text style={[styles.exerciseListItemText, selectedExercises.includes(item) ? {color: 'white'} : {}]}>{item}</Text>
+                        <Text style={[styles.exerciseCategory, selectedExercises.includes(item) ? {color: 'white'} : {}]}>{category}</Text>
+                      </View>
+                      
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{}} onPress={()=>navigation.navigate('ExerciseView', {name: item})}>
+                      <AntDesign name="question" size={24} color={selectedExercises.includes(item) ? 'white' : 'black'} />
+                    </TouchableOpacity>
+                  </View>
+              )})}
             </ScrollView>
           ) : (
             <ScrollView style={{ height: 500 }}>
@@ -181,6 +256,7 @@ const Exercise = () => {
                   key={index}
                   onPress={() => setExerciseName(item)}
                 >
+                  
                   <Text style={styles.exerciseListItemText}>{item}</Text>
                   <Text style={styles.exerciseCategory}>{category}</Text>
                 </TouchableOpacity>
@@ -188,39 +264,14 @@ const Exercise = () => {
             </ScrollView>
           )}
         </View>
-
-        <Text style={styles.label}>Exercise Name</Text>
-
-        <TextInput
-          style={styles.input}
-          placeholder="Enter exercise (e.g., Bench Press)"
-          value={exerciseName}
-          onChangeText={setExerciseName}
-        />
-        <TouchableOpacity style={styles.addButton} onPress={addWorkout}>
-          <Text style={styles.addButtonText}>Add Exercise</Text>
+        <TouchableOpacity style={{alignItems: 'flex-end'}} onPress={saveExerciseData}>
+          <AntDesign name="checkcircle" size={40} color="#6c63ff" />
         </TouchableOpacity>
+
+    
       </View>
 
-      <Text style={styles.sectionTitle}>
-        Exercises for {selectedDate || "Select a date"}
-      </Text>
-      <ScrollView>
-        {selectedDayExercises.map((item, index) => (
-          <View style={styles.workoutItem} key={index}>
-            <Text style={styles.workoutText}>
-              {item.name}: {item.sets} sets x {item.reps} reps @ {item.weight}{" "}
-              kg
-            </Text>
-            <TouchableOpacity
-              onPress={() => deleteWorkout(item.id)}
-              style={styles.deleteButton}
-            >
-              <Text style={styles.deleteButtonText}>Delete</Text>
-            </TouchableOpacity>
-          </View>
-        ))}
-      </ScrollView>
+
     </View>
   );
 };
