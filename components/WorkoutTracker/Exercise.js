@@ -123,16 +123,6 @@ const Exercise = () => {
     setAddCategory(!addCategory);
   };
 
-  const data = [
-    "dcdcds",
-    "dvdscvsd",
-    "sdvsdv",
-    "sdvcds",
-    "dsvds",
-    "sdvcsdcvsd",
-    "sdcvsdcsd",
-    "sdvsdvsd",
-  ];
 
   return (
     <View>

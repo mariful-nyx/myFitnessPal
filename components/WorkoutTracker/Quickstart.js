@@ -1,11 +1,12 @@
 import {
+  Alert,
   Dimensions,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { AntDesign, Feather } from "@expo/vector-icons";
 import { exerciseItems } from "../../screens/sampleItems";
 import {
@@ -14,57 +15,72 @@ import {
   MenuOptions,
   MenuTrigger,
 } from "react-native-popup-menu";
+import { get, getDatabase, ref } from "firebase/database";
+import { getAuth } from "firebase/auth";
+import { useLocale, useRoute } from "@react-navigation/native";
 
 const Quickstart = ({navigation}) => {
-  const templates = [
-    "dfvcdsvds",
-    "sdcds",
-    "fdvdfvdf",
-    "dfvdfcvds",
-    "dfvdvds",
-    "dfvdfvdf",
-    "dfvdfvdvdf",
-  ];
 
   const screenWidth = Dimensions.get("window").width;
+
+  const [exercises, setExercises] = useState()
+
+
+  // Auth for saving data
+  const auth = getAuth();
+  const userId = auth.currentUser?.uid;
+  const date = new Date().toISOString().split('T')[0];
+
+
+  const fetchExerciseData = async () => {
+    if (!userId) return;
+    
+    try {
+      const db = getDatabase();
+      const exerciseRef = ref(db, `users/${userId}/exercises/`);
+      
+      const data = await get(exerciseRef);
+
+      setExercises(data.val())
+      
+
+    } catch (error) {
+      console.error('Error saving Exercises:', error);
+      Alert.alert('Error', 'Failed to save Exercises data');
+    }
+  };
+
+
+  useEffect(()=>{
+    fetchExerciseData()
+  }, [])
+
+
+
 
   return (
     <View style={styles.container}>
       <Text>Quickstart</Text>
       <View style={styles.templateSection}>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <Text style={styles.heading}>Workout</Text>
+          <Text style={styles.heading}>Exercise</Text>
 
           <View style={{ flexDirection: "row", gap: 12 }}>
             <TouchableOpacity onPress={() => navigation.navigate('AddTemplate')}>
               <AntDesign name="plus" size={24} color="gray" />
             </TouchableOpacity>
 
-            <Menu>
-              <MenuTrigger>
-                <Feather name="more-horizontal" size={24} color="gray" />
-              </MenuTrigger>
-              <MenuOptions>
-                {exerciseItems &&
-                  Object?.keys(exerciseItems)?.map((item, index) => (
-                    <MenuOption
-                      key={index}
-                      style={styles.menuOption}
-                      onSelect={() => toggleCategory(item)}
-                    >
-                      <Text style={styles.menuOptionText}>{item}</Text>
-                    </MenuOption>
-                  ))}
-              </MenuOptions>
-            </Menu>
           </View>
         </View>
 
 
         <View style={{ marginTop: 20 }}>
           <Text style={{ color: "gray", fontSize: 20, fontWeight: "bold" }}>
-            Saved workout{" "}
+            Saved exercises{" "}
           </Text>
+            <TouchableOpacity onPress={fetchExerciseData}>
+              <Text>refresh</Text>
+            </TouchableOpacity>
           <View
             style={{
               marginTop: 12,
@@ -73,7 +89,7 @@ const Quickstart = ({navigation}) => {
               gap: 12,
             }}
           >
-            {templates?.map((item, index) => (
+            {exercises?.map((item, index) => (
               <TouchableOpacity
                 key={index}
                 style={{
@@ -83,7 +99,7 @@ const Quickstart = ({navigation}) => {
                   padding: 12,
                   width: screenWidth / 2 - 27,
                 }}
-                onPress={()=>navigation.navigate('StartWorkout', { name: 'Leg' })}
+                onPress={()=>navigation.navigate('StartWorkout', { name: item })}
               >
                 <Text>{item}</Text>
               </TouchableOpacity>

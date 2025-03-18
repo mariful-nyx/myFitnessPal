@@ -12,12 +12,7 @@ import {
   ScrollView,
   SafeAreaView,
 } from 'react-native';
-import { Calendar } from 'react-native-calendars';
-import { getAuth } from 'firebase/auth';
-import { getDatabase, ref, onValue, set, remove } from 'firebase/database';
-import { app } from '../firebase/firebaseConfig';
-import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
-import { exerciseItems } from './sampleItems';
+
 import Quickstart from '../components/WorkoutTracker/Quickstart';
 import Exercise from '../components/WorkoutTracker/Exercise';
 
@@ -25,7 +20,6 @@ import Exercise from '../components/WorkoutTracker/Exercise';
 
 const WorkoutTracker = ({navigation}) => {
   const [currentTab, setCurrentTab] = useState(0)
-  
 
 
   return (

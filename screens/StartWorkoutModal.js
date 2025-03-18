@@ -1,4 +1,5 @@
 import {
+  Alert,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -7,29 +8,133 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Octicons from "@expo/vector-icons/Octicons";
 import { Entypo, Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { get, getDatabase, ref, set } from "firebase/database";
+import { getAuth } from "firebase/auth";
+import { Calendar } from "react-native-calendars";
 
-const StartWorkoutModal = () => {
+const StartWorkoutModal = ({route}) => {
+  const {name} = route.params
   const [kg, setKg] = useState();
-  const [reps, setReps] = useState();
-  const [weight, setWeight] = useState();
-  const [sets, setSets] = useState([1]);
+  const [reps, setReps] = useState(0);
+  const [weight, setWeight] = useState(0);
+  const [sets, setSets] = useState(0);
+
+  const [preExercise, setPreExercise] = useState()
+  
+
+
+  const auth = getAuth();
+  const userId = auth.currentUser?.uid;
+  const date = new Date().toISOString().split('T')[0];
+  
+  const [selectedDate, setSelectedDate] = useState(date)
+
 
   const navigation = useNavigation()
 
-  const handleAddSet = () => {
-    setSets((prev) => [...prev, prev.length + 1]); // Add the next number in sequence
+
+  const handleStartExercise = async() => {
+    if (!userId ) return;
+  
+    try {
+      const db = getDatabase();
+      const exerciseRef = ref(db, `users/${userId}/exercise/${name}/${date}`);
+  
+      // Fetch the current exercises
+      try {
+        const snapshot = await get(exerciseRef);
+        const existingExercises = snapshot.exists() ? snapshot.val() : [];
+    
+
+        const updatedExercises = [...existingExercises, {
+          set: sets,
+          reps: reps,
+          weight: weight
+        }]
+    
+
+        await set(exerciseRef, updatedExercises)
+        setKg(0)
+        setWeight(0)
+        setReps(0)
+        setSets(0)
+        await fetchDetail()
+      
+      } catch {
+        await set(exerciseRef, [{ set: sets, reps: reps, weight: weight }])
+        setKg(0)
+        setWeight(0)
+        setReps(0)
+        setSets(0)
+        await fetchDetail()
+      }
+
+    } catch (error) {
+      console.error('Error updating Exercise:', error);
+    }
   };
 
-  const handleRemoveSet = (set) => {
-    const newSets = sets.filter((item)=>(item !== set))
-    setSets(newSets)
-  }
 
-  console.log(sets.length);
+
+  const fetchDetail = async() => {
+    if (!userId ) return;
+  
+    try {
+      const db = getDatabase();
+      const exerciseRef = ref(db, `users/${userId}/exercise/${name}/${date}`);
+
+      const snap = await get(exerciseRef)
+
+      setPreExercise(snap.val())
+
+
+    } catch (error) {
+      console.error('Error fetch Exercise:', error);
+    }
+  };
+
+
+  useEffect(()=>{
+    fetchDetail()
+  }, [])
+
+
+
+  const handleDelete = async () => {
+    if (!userId ) return;
+  
+    try {
+      const db = getDatabase();
+      const exerciseRef = ref(db, `users/${userId}/exercises/`);
+  
+      // Fetch the current exercises
+      const snapshot = await get(exerciseRef);
+      const existingExercises = snapshot.exists() ? snapshot.val() : [];
+  
+      // Filter out the exercise with the given ID
+      const updatedExercises = existingExercises.filter(exercise => exercise !== name);
+  
+      // Save the updated list of exercises without the deleted one
+      await set(exerciseRef, updatedExercises);
+
+      navigation.goBack()
+    } catch (error) {
+      console.error('Error deleting Exercise:', error);
+      Alert.alert('Error', 'Failed to delete Exercise data');
+    }
+  };
+
+
+
+  console.log(sets, reps)
+
+
+
+
   return (
     <ScrollView>
       <View
@@ -54,9 +159,7 @@ const StartWorkoutModal = () => {
             <Octicons name="chevron-down" size={24} color="black" />
           </TouchableOpacity>
 
-          <View>
-            <Text>12:13</Text>
-          </View>
+        
 
           <View>
             <TouchableOpacity onPress={() => null}>
@@ -67,19 +170,20 @@ const StartWorkoutModal = () => {
 
         <View style={{ marginTop: 40 }}>
           <Text style={{ color: "#6c63ff", fontWeight: "bold", fontSize: 16 }}>
-            Arnold Press (Dumbbel)
+            {name}
           </Text>
-          {sets.map((item, index) => (
-            <View style={styles.row} key={index}>
+    
+            <View style={styles.row} >
               <View style={styles.column}>
                 <Text style={styles.label}>Sets</Text>
-                {/* <TextInput
-                style={styles.input}
-                placeholder="Sets"
-                keyboardType="numeric"
-                value={sets}
-              /> */}
-                <Text style={{ paddingVertical: 8 }}>{item}</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Sets"
+                  keyboardType="numeric"
+                  value={sets}
+                  onChangeText={setSets}
+                />
+               
               </View>
 
               <View style={styles.column}>
@@ -110,7 +214,7 @@ const StartWorkoutModal = () => {
                 <View style={{flexDirection: 'row', gap: 6}}>
 
                   <TouchableOpacity
-                    onPress={() => null}
+                    onPress={handleStartExercise}
                     style={{
                       paddingVertical: 10,
                       paddingHorizontal: 8,
@@ -123,43 +227,40 @@ const StartWorkoutModal = () => {
                     <Feather name="check" size={20} color="white" />
                   </TouchableOpacity>
 
-                  {sets.length > 1 && (
-                    <TouchableOpacity
-                      onPress={() => handleRemoveSet(item)}
-                      style={{
-                        paddingVertical: 8,
-                        paddingHorizontal: 6,
-                        width: 38,
-                        height: 40,
-                        borderRadius: 5,
-                        borderWidth: 1,
-                        borderColor: 'red'
-                      }}
-                    >
-                      <Entypo name="cross" size={24} color="red" />
-                    </TouchableOpacity>
-                  )}
+     
                 </View>
               </View>
             </View>
+        </View>
+
+
+
+        <ScrollView style={{paddingHorizontal: 20, marginTop:20, height: 400}}>
+          {preExercise?.map((item, index)=>(
+            <View style={styles.row} key={index}>
+              <View style={styles.column}>
+                <Text style={styles.label}>Sets</Text>
+            
+                <Text style={{ paddingVertical: 8 }}>{item.set}</Text>
+              </View>
+
+              <View style={styles.column}>
+                <Text style={styles.label}>Reps</Text>
+            
+                <Text style={{ paddingVertical: 8 }}>{item.reps}</Text>
+              </View>
+
+              <View style={styles.column}>
+                <Text style={styles.label}>Weight</Text>
+            
+                <Text style={{ paddingVertical: 8 }}>{item.weight}</Text>
+              </View>
+
+            </View>
           ))}
-
-          
-            <TouchableOpacity onPress={handleAddSet} style={styles.addButton}>
-              <Text style={styles.addButtonText}>Add Set</Text>
-            </TouchableOpacity>
-
-        </View>
+        </ScrollView>
 
 
-        <View style={{marginTop: 10}}>
-
-
-          <TouchableOpacity onPress={()=>navigation.goBack()} style={[styles.dangerBtn, {marginTop: 20}]}>
-            <Text style={{color: 'red'}}>Cancel workout</Text>
-          </TouchableOpacity>
-
-        </View>
       </View>
     </ScrollView>
   );
