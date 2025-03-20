@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text, StyleSheet, Alert } from 'react-native';
+import { View, TextInput, Button, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { auth, database } from '../firebase/firebaseConfig';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { ref, set } from 'firebase/database';
@@ -66,8 +66,16 @@ const SignupScreen = ({ navigation }) => {
       <TextInput style={styles.input} placeholder="Weight (kg)" value={weight} onChangeText={setWeight} keyboardType="numeric" />
       <TextInput style={styles.input} placeholder="Height (cm)" value={height} onChangeText={setHeight} keyboardType="numeric" />
       
-      <Button title="Sign Up" onPress={handleSignup} />
-      <Button title="Already have an account? Login" onPress={() => navigation.navigate('Login')} />
+      <TouchableOpacity onPress={handleSignup} style={styles.signupBtn}>
+        <Text style={styles.signupBtnText}>Sign Up</Text>
+      </TouchableOpacity>
+
+
+      <TouchableOpacity onPress={() => navigation.navigate('Login')} style={styles.ahcBtn}>
+        <Text style={styles.ahcBtnText}>Already have an account? </Text>
+        <Text style={styles.loginBtn}>Login</Text>
+      </TouchableOpacity>
+
     </View>
   );
 };
@@ -76,6 +84,11 @@ const styles = StyleSheet.create({
   container: { padding: 20, flex: 1, justifyContent: 'center' },
   input: { height: 40, borderColor: '#ccc', borderWidth: 1, marginBottom: 15, paddingLeft: 8 },
   picker: { height: 50, marginBottom: 15, borderColor: '#ccc', borderWidth: 1 },
+  signupBtn: {backgroundColor: '#6c63ff', paddingVertical: 12, borderRadius: 5, alignItems: 'center'},
+  signupBtnText: {color: 'white', fontSize: 16, fontWeight: 'bold'},
+  ahcBtn: {marginTop: 12},
+  ahcBtnText: {fontSize: 16},
+  loginBtn: {color: '#6c63ff', fontSize: 16, fontWeight: 'bold'}
 });
 
 export default SignupScreen;

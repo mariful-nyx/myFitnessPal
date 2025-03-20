@@ -23,6 +23,8 @@ import SavedMealsScreen from '../screens/SavedMealsScreen';
 import ExerciseViewScreen from '../screens/ExerciseViewScreen';
 import StartWorkoutModal from '../screens/StartWorkoutModal';
 import AddExercise from '../screens/AddExercise';
+import ViewSavedRun from '../screens/ViewSavedRun';
+import TemplateView from '../screens/TemplateView';
 
 // Create navigators
 const Stack = createStackNavigator();
@@ -140,7 +142,7 @@ export default function Navigation() {
             <Stack.Group screenOptions={{presentation: 'card'}}>
               <Stack.Screen name='AddTemplate' component={AddExercise} options={{title: 'Add Exercise'}}/>
               <Stack.Screen name='ExerciseView' component={ExerciseViewScreen} options={({route})=>({title: route.params?.name})} />
-              
+              <Stack.Screen name='TemplateView' component={TemplateView} options={({route})=>({title: route.params?.name})} />
             </Stack.Group>
             <Stack.Group screenOptions={{presentation: 'modal'}}>
 
@@ -150,6 +152,7 @@ export default function Navigation() {
                 options={{headerShown: false}} 
               />
             </Stack.Group>
+            <Stack.Screen name='ViewSavedRun' component={ViewSavedRun} options={{title: 'Saved Run'}}/>
           </>
         ) : (
           <>

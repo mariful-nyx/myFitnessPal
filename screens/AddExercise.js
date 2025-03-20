@@ -16,13 +16,19 @@ const AddExercise = () => {
   
   const {goBack} = useNavigation()
 
+  const currentDate = new Date().getDay() -1
+
+  const day = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][currentDate];
+
+  console.log(day)
+
 
   const saveExerciseData = async () => {
     if (!userId) return;
     
     try {
       const db = getDatabase();
-      const exerciseRef = ref(db, `users/${userId}/exercises/`);
+      const exerciseRef = ref(db, `users/${userId}/exercises/${day}`);
       
       try{
 
@@ -66,6 +72,20 @@ const AddExercise = () => {
         />
       </View>
 
+      <TouchableOpacity
+        onPress={()=>null}
+        style={{
+          paddingVertical: 10,
+          paddingHorizontal: 8,
+          marginTop: 10,
+          height: 40,
+          borderRadius: 5,
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
+      >
+        <Text style={{color: '#6c63ff', fontWeight: 'bold'}}>Add Exercise</Text>
+      </TouchableOpacity>
 
       <TouchableOpacity
         onPress={() => handleExerciseCreate()}

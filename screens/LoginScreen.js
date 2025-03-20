@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, Text, StyleSheet, Alert } from 'react-native';
+import { View, TextInput, Button, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { auth } from '../firebase/firebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -56,9 +56,21 @@ const LoginScreen = ({ navigation }) => {
     <View style={styles.container}>
       <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} keyboardType="email-address" />
       <TextInput style={styles.input} placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry />
-      <Button title="Login" onPress={handleLogin} />
-      <Button title="Forgot Password?" onPress={() => navigation.navigate('ForgotPassword')} />
-      <Button title="Sign Up" onPress={() => navigation.navigate('Signup')} />
+      
+      <TouchableOpacity onPress={handleLogin} style={styles.loginBtn}>
+        <Text style={styles.loginBtnText}>Login</Text>
+      </TouchableOpacity>
+
+
+      <TouchableOpacity style={styles.forgotPassBtn} onPress={()=>navigation.navigate('ForgotPassword')}>
+        <Text style={styles.forgotPassBtnText}>Forgot Password?</Text>
+      </TouchableOpacity>
+
+      <Text style={{marginTop: 20}}>If you don't have account ??</Text>
+
+      <TouchableOpacity style={styles.signUpBtn} onPress={()=>navigation.navigate('Signup')}>
+        <Text style={styles.signUpBtnText}>Sign Up</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -66,6 +78,13 @@ const LoginScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: { padding: 20, flex: 1, justifyContent: 'center' },
   input: { height: 40, borderColor: '#ccc', borderWidth: 1, marginBottom: 15, paddingLeft: 8 },
+  loginBtn: {backgroundColor: '#6c63ff', paddingVertical: 12, borderRadius: 5, alignItems: 'center'},
+  loginBtnText: {color: 'white', fontSize: 16, fontWeight: 'bold'},
+  forgotPassBtn: {marginTop: 30},
+  forgotPassBtnText: {fontSize: 16, fontWeight: 'bold', color: '#6c63ff'},
+
+  signUpBtn: {marginTop: 12, borderWidth: 1, borderColor: '#6c63ff', paddingVertical: 12,  borderRadius: 5, alignItems: 'center'},
+  signUpBtnText: {color: '#6c63ff'}
 });
 
 export default LoginScreen;

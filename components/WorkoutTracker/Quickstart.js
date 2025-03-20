@@ -17,10 +17,10 @@ import {
 } from "react-native-popup-menu";
 import { get, getDatabase, ref } from "firebase/database";
 import { getAuth } from "firebase/auth";
-import { useLocale, useRoute } from "@react-navigation/native";
+import { useLocale, useNavigation, useRoute } from "@react-navigation/native";
 
-const Quickstart = ({navigation}) => {
-
+const Quickstart = ({day, handleDaySelect}) => {
+  const navigation = useNavigation()
   const screenWidth = Dimensions.get("window").width;
 
   const [exercises, setExercises] = useState()
@@ -32,12 +32,16 @@ const Quickstart = ({navigation}) => {
   const date = new Date().toISOString().split('T')[0];
 
 
+
+  console.log(day)
+
+
   const fetchExerciseData = async () => {
     if (!userId) return;
     
     try {
       const db = getDatabase();
-      const exerciseRef = ref(db, `users/${userId}/exercises/`);
+      const exerciseRef = ref(db, `users/${userId}/exercises/${day}`);
       
       const data = await get(exerciseRef);
 
@@ -53,7 +57,7 @@ const Quickstart = ({navigation}) => {
 
   useEffect(()=>{
     fetchExerciseData()
-  }, [])
+  }, [day])
 
 
 
@@ -78,9 +82,30 @@ const Quickstart = ({navigation}) => {
           <Text style={{ color: "gray", fontSize: 20, fontWeight: "bold" }}>
             Saved exercises{" "}
           </Text>
-            <TouchableOpacity onPress={fetchExerciseData}>
-              <Text>refresh</Text>
-            </TouchableOpacity>
+
+
+            <View style={[styles.daySelector, {marginTop: 12}]}>
+              {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((item, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    styles.dayButton,
+                    item === day && styles.selectedDayButton,
+                  ]}
+                  onPress={() => handleDaySelect(index)}
+                >
+                  <Text
+                    style={[
+                      styles.dayButtonText,
+                      item === day && styles.selectedDayButtonText,
+                    ]}
+                  >
+                    {item}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
           <View
             style={{
               marginTop: 12,
@@ -125,5 +150,27 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: "bold",
     color: "gray",
+  },
+  daySelector: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  dayButton: {
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: '#f0f0f0',
+    alignItems: 'center',
+  },
+  selectedDayButton: {
+    backgroundColor: '#6c63ff',
+  },
+  dayButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  selectedDayButtonText: {
+    color: '#ffffff',
   },
 });

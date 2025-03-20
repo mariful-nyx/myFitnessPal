@@ -13,9 +13,14 @@ import * as Location from 'expo-location';
 import { MaterialIcons, Entypo } from '@expo/vector-icons';
 import { Pedometer } from 'expo-sensors';
 import { getAuth } from 'firebase/auth';
-import { getDatabase, ref, set } from 'firebase/database';
+import { get, getDatabase, ref, set } from 'firebase/database';
+import { captureRef } from 'react-native-view-shot';
+import { Image } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+
 
 const StopwatchScreen = () => {
+  const navigation = useNavigation()
   // State variables
   const [isRunning, setIsRunning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -29,6 +34,8 @@ const StopwatchScreen = () => {
   const [zoomLevel, setZoomLevel] = useState(0.01);
   const [weight, setWeight] = useState(70); // Default weight
   const [distance, setDistance] = useState(0); // Track distance in meters
+  const [mapSpanshot, setMapSpanshot] = useState(); // Track distance in meters
+  
   
   // Refs for subscriptions to ensure proper cleanup
   const locationSubscriptionRef = useRef(null);
@@ -218,15 +225,32 @@ const StopwatchScreen = () => {
     try {
       const db = getDatabase();
       const workoutRef = ref(db, `users/${userId}/workouts/${date}`);
+
+      const prevWorkout = await get(workoutRef)
       
-      await set(workoutRef, {
-        date,
-        duration: time,
-        steps,
-        calories,
-        distance,
-        timestamp: new Date().toISOString()
-      });
+
+      if(prevWorkout.exists()){
+        await set(workoutRef, [...prevWorkout.val(), {
+          date,
+          duration: time,
+          steps,
+          calories,
+          distance,
+          timestamp: new Date().toISOString(),
+        
+        }]);
+
+      } else {      
+        await set(workoutRef, [{
+          date,
+          duration: time,
+          steps,
+          calories,
+          distance,
+          timestamp: new Date().toISOString(),
+          img: uri
+        }])
+      }
       
       Alert.alert('Success', 'Workout saved successfully!');
     } catch (error) {
@@ -294,6 +318,10 @@ const StopwatchScreen = () => {
 
   const startingLocation = path.length > 0 ? path[0] : null;
 
+
+
+ 
+
   return (
     <View style={styles.container}>
       {/* Map View */}
@@ -353,7 +381,7 @@ const StopwatchScreen = () => {
           <Text style={styles.figureLabel}>Time</Text>
           <Text style={styles.figureValue}>{formattedTime}</Text>
         </View>
-        
+
         <View style={styles.figureBox}>
           <Text style={styles.figureLabel}>Speed</Text>
           <Text style={styles.figureValue}>{formattedSpeed} km/h</Text>
@@ -394,6 +422,8 @@ const StopwatchScreen = () => {
         </TouchableOpacity>
       </View>
 
+  
+
       {/* Main Controls */}
       <View style={styles.controlsContainer}>
         {!isRunning ? (
@@ -422,12 +452,12 @@ const StopwatchScreen = () => {
           </>
         )}
       </View>
-
+          
       {/* Button to View Saved Runs */}
       <View style={styles.viewRunsContainer}>
         <TouchableOpacity
           style={styles.viewRunsButton}
-          onPress={handleViewSavedRuns}
+          onPress={()=>navigation.navigate('ViewSavedRun')}
         >
           <Text style={styles.viewRunsText}>View Saved Runs</Text>
         </TouchableOpacity>

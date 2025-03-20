@@ -517,7 +517,7 @@ const HomeScreen = ({ route }) => {
                       borderColor: 'white',
                       borderWidth:1
                     }}>
-                    <Text style={{color: 'white', fontWeight: 'bold', fontSize: 16}}>Steps: {item.value}</Text>
+                    <Text style={{color: 'white', fontWeight: 'bold', fontSize: 16}}>Calories: {item.value}</Text>
                   </View>
                 );
               }}

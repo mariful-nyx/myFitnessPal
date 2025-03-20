@@ -26,7 +26,7 @@ import { useNavigation } from '@react-navigation/native';
 
 
 
-const Exercise = () => {
+const Exercise = ({day}) => {
   const navigation = useNavigation()
   const [selectedDate, setSelectedDate] = useState("");
   const [exerciseName, setExerciseName] = useState("");
@@ -34,7 +34,7 @@ const Exercise = () => {
   const [reps, setReps] = useState("");
   const [weight, setWeight] = useState("");
   const [selectedExercises, setSelectedExercises] = useState([]);
-  const [category, setCategory] = useState(null);
+  const [category, setCategory] = useState('chest');
   const [addCategory, setAddCategory] = useState(false);
 
 
@@ -44,85 +44,7 @@ const Exercise = () => {
   const screenWidth = Dimensions.get('window').width;
   const userId = auth.currentUser?.uid;
 
-  useEffect(() => {
-    if (selectedDate && userId) {
-      const exercisesRef = ref(
-        database,
-        `users/${userId}/workouts/${selectedDate}`
-      );
-
-      const unsubscribe = onValue(exercisesRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          setSelectedDayExercises(Object.values(data)); // Convert object to array
-        } else {
-          setSelectedDayExercises([]); // Set empty array if no data
-        }
-      });
-
-      return () => {
-        unsubscribe(); // Cleanup listener
-      };
-    }
-  }, [selectedDate, userId]);
-
-  const addWorkout = () => {
-    if (
-      !exerciseName ||
-      !sets ||
-      !reps ||
-      !weight ||
-      !selectedDate ||
-      !userId
-    ) {
-      console.log("All fields are required");
-      return; // Prevent adding if any field is empty
-    }
-
-    const newExercise = {
-      id: Date.now(),
-      name: exerciseName,
-      sets: Number(sets),
-      reps: Number(reps),
-      weight: Number(weight),
-    };
-
-    const exerciseRef = ref(
-      database,
-      `users/${userId}/workouts/${selectedDate}/${newExercise.id}`
-    );
-
-    set(exerciseRef, newExercise)
-      .then(() => {
-        // Reset fields after successful addition
-        setExerciseName("");
-        setSets("");
-        setReps("");
-        setWeight("");
-        console.log("Workout added successfully");
-      })
-      .catch((error) => {
-        console.error("Error saving workout:", error.message);
-        alert("There was an error saving your workout. Please try again.");
-      });
-  };
-
-  const deleteWorkout = (exerciseId) => {
-    const exerciseRef = ref(
-      database,
-      `users/${userId}/workouts/${selectedDate}/${exerciseId}`
-    );
-
-    remove(exerciseRef)
-      .then(() => {
-        console.log("Workout deleted successfully");
-      })
-      .catch((error) => {
-        console.error("Error deleting workout:", error.message);
-        alert("There was an error deleting the workout. Please try again.");
-      });
-  };
-
+  
   const toggleCategory = (name) => {
     setCategory(name);
   };
@@ -149,7 +71,7 @@ const Exercise = () => {
       
       try {
         const db = getDatabase();
-        const exerciseRef = ref(db, `users/${userId}/exercises/`);
+        const exerciseRef = ref(db, `users/${userId}/exercises/${day}`);
         
         try{
   
@@ -178,10 +100,9 @@ const Exercise = () => {
         Alert.alert('Error', 'Failed to save Exercises data');
       }
     };
+
   
-
-  console.log(selectedExercises, "-----------")
-
+  console.log(typeof Object.values(exerciseItems))
 
   return (
     <View>
@@ -264,10 +185,12 @@ const Exercise = () => {
             </ScrollView>
           )}
         </View>
-        <TouchableOpacity style={{alignItems: 'flex-end'}} onPress={saveExerciseData}>
-          <AntDesign name="checkcircle" size={40} color="#6c63ff" />
-        </TouchableOpacity>
 
+        {selectedExercises.length > 0 && (
+          <TouchableOpacity style={{alignItems: 'flex-end'}} onPress={saveExerciseData}>
+            <AntDesign name="checkcircle" size={40} color="#6c63ff" />
+          </TouchableOpacity>
+        )}
     
       </View>
 

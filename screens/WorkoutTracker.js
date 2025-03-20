@@ -21,6 +21,13 @@ import Exercise from '../components/WorkoutTracker/Exercise';
 const WorkoutTracker = ({navigation}) => {
   const [currentTab, setCurrentTab] = useState(0)
 
+  const [selectedDay, setSelectedDay] = useState(new Date().getDay() - 1)
+
+  const day = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][selectedDay];
+
+  const handleDaySelect = (dayIndex) => {
+    setSelectedDay(dayIndex)
+  }
 
   return (
     <ScrollView>
@@ -38,9 +45,9 @@ const WorkoutTracker = ({navigation}) => {
         </View>
 
         {currentTab === 0 ? (
-          <Quickstart navigation={navigation}/>
+          <Quickstart day={day} handleDaySelect={handleDaySelect}/>
         ):(
-          <Exercise navigation={navigation}/>
+          <Exercise day={day}/>
         )}
       </View>
     </ScrollView>
