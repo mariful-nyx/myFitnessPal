@@ -18,14 +18,18 @@ import { app } from '../firebase/firebaseConfig';
 import { BarChart as BarChartRNG } from "react-native-gifted-charts";
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { stepsSample } from './sampleItems';
+import moment from 'moment';
+import CaloriesChart from '../components/HomeComponent/CaloriesChart';
+import StepsChart from '../components/HomeComponent/StepsChart';
+
 
 
 
 const screenWidth = Dimensions.get('window').width;
 
 const HomeScreen = ({ route }) => {
-  const profileData = route.params || {};
-  const { weight, height, age, gender, activityLevel, goal } = profileData;
+  const { weight, height, age, gender, activityLevel, goal } = route.params || {};
+
 
   const [currentStepCount, setCurrentStepCount] = useState(0);
   const [caloriesBurned, setCaloriesBurned] = useState(0);
@@ -36,10 +40,9 @@ const HomeScreen = ({ route }) => {
   const [customCalories, setCustomCalories] = useState('');
   const [bmr, setBmr] = useState(0);
   const [goalCalories, setGoalCalories] = useState(0);
-  const [selectedIndexStep, setSelectedIndexStep] = useState(0)
-  const [selectedIndexCalories, setSelectedIndexCalories] = useState(0)
-
   
+  const [workouts, setWorkouts] = useState(null)
+
 
 
   // Weekly data states
@@ -53,6 +56,24 @@ const HomeScreen = ({ route }) => {
   const userId = auth.currentUser?.uid;
   const date = new Date().toISOString().split('T')[0];
   const day = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][new Date().getDay() - 1];
+
+
+  const fetchExerciseData = async () => {
+    if (!userId) return;
+
+    try {
+      const db = getDatabase();
+      const exerciseRef = ref(db, `users/${userId}/workouts/`);
+
+      const data = await get(exerciseRef);
+
+      setWorkouts(data.val());
+
+    } catch (error) {
+      console.error("Error saving Exercises:", error);
+      Alert.alert("Error", "Failed to save Exercises data");
+    }
+  };
 
   // Fetch steps data for the current day and week
   useEffect(() => {
@@ -151,6 +172,8 @@ const HomeScreen = ({ route }) => {
       const goalCal = snapshot.val() || 0;
       setGoalCalories(goalCal);
     });
+
+    fetchExerciseData()
   }, [userId]);
 
   // Calculate BMR and goal calories
@@ -292,6 +315,7 @@ const HomeScreen = ({ route }) => {
       setName('User'); // Default name on error
       setIsLoading(false); // Set loading to false on error
     });
+
   }, [userId]);
 
   if (isLoading) {
@@ -303,61 +327,9 @@ const HomeScreen = ({ route }) => {
   }
 
 
+  
 
-  console.log(graphData[graphType].datasets[0].data.map(val => val || 0), "--------------")
-
-  let barData = {
-    0: [
-      {value: 250, label: 'M'},
-      {value: 500, label: 'T'},
-      {value: 745, label: 'W'},
-      {value: 320, label: 'T'},
-      {value: 600, label: 'F'},
-      {value: 256, label: 'S'},
-    ],
-    1: [
-      {value: 24, label: 'M'},
-      {value: 143, label: 'T'},
-      {value: 232, label: 'W'},
-      {value: 642, label: 'T'},
-      {value: 124, label: 'F'},
-      {value: 213, label: 'S'},
-    ]
-  }
-
-
-  const getWidthSpace = (chartTypeIndex) => {
-    let barWidth = 0
-    let spacing = 0
-    
-    // for days
-    if (chartTypeIndex === 0) {
-      barWidth = 6
-      spacing = 6
-      return {barWidth: barWidth, spacing: spacing}
-
-    } else if (chartTypeIndex === 1) { // for weeks
-      barWidth = 25
-      spacing = 20
-      return {barWidth: barWidth, spacing: spacing}
-
-    } else if (chartTypeIndex === 2) { // for per month
-      barWidth = 5
-      spacing = 5
-      return {barWidth: barWidth, spacing: spacing}
-
-    } else if (chartTypeIndex === 3) { // for 6 months
-      barWidth = 25
-      spacing = 22
-      return {barWidth: barWidth, spacing: spacing}
-
-    } else if (chartTypeIndex === 4) { // for one year
-      barWidth = 15
-      spacing = 10
-      return {barWidth: barWidth, spacing: spacing}
-    } 
-  }
-
+  console.log(workouts)
 
 
   return (
@@ -412,123 +384,12 @@ const HomeScreen = ({ route }) => {
 
       <View style={styles.graphContainer}>
       
-        <Text style={styles.graphTitle}>Daily {graphType}</Text>
-          <View style={{width: '100%', height: 50, justifyContent: 'center', paddingVertical:6}}>
-            <SegmentedControl
-              values={['D', 'w', 'M', '6M', 'Y']}
-              selectedIndex={selectedIndexStep}
-              onChange={(event) => {
-                setSelectedIndexStep(event.nativeEvent.selectedSegmentIndex);
-              }}
-              style={{marginVertical: 10}}
-            />
-          </View>
-          
-        {graphData[graphType]?.datasets?.[0]?.data?.length > 0 ? (
-          <>
-           
-            <BarChartRNG
-              key={selectedIndexStep}
-              data={stepsSample[selectedIndexStep]}
-              backgroundColor='white'
-              height={250}
-              width={screenWidth-50}
-              barWidth={getWidthSpace(selectedIndexStep).barWidth}
-              barBorderRadius={5}
-              spacing={getWidthSpace(selectedIndexStep).spacing}
-              noOfSections={4}
-              xAxisThickness={0}
-              yAxisThickness={0}
-              xAxisLabelTextStyle={{color: 'gray', fontSize: 11}}
-              yAxisLabelTextStyle={{color: 'gray', fontSize: 10}}
-              chartConfig={{
-                yAxisLabelInterval: 8, // This controls the interval between the y-axis labels
-              }}
-              isAnimated
-              animationDuration={500}
-              frontColor={'#00ec61'}
-              renderTooltip={(item, index) => {
-                return (
-                  <View
-                    style={{
-                      marginBottom: -10,
-                      marginLeft: -6,
-                      backgroundColor: '#ff911b',
-                      paddingHorizontal: 6,
-                      paddingVertical: 4,
-                      borderRadius: 4,
-                      borderColor: 'white',
-                      borderWidth:1
-                    }}>
-                    <Text style={{color: 'white', fontWeight: 'bold', fontSize: 16}}>Steps: {item.value}</Text>
-                  </View>
-                );
-              }}
-            />
-           
-          </>
-        ) : (
-          <View style={styles.noDataContainer}>
-            <Text style={styles.noDataText}>No data available</Text>
-          </View>
-        )}
+        <StepsChart data={workouts}/>
       </View>
 
       
       <View style={styles.graphContainer}>
-        <Text style={styles.graphTitle}>Daily Calories Burned</Text>
-        {graphData[graphType]?.datasets?.[0]?.data?.length > 0 ? (
-          <>
-           <SegmentedControl
-              values={['D', 'w', 'M', '6M', 'Y']}
-              selectedIndex={selectedIndexCalories}
-              onChange={(event) => {
-                setSelectedIndexCalories(event.nativeEvent.selectedSegmentIndex);
-              }}
-              style={{marginVertical: 10}}
-            />
-            <BarChartRNG
-              key={selectedIndexCalories}
-              data={stepsSample[selectedIndexCalories]}
-              backgroundColor='white'
-              height={250}
-              width={screenWidth-50}
-              barWidth={getWidthSpace(selectedIndexCalories).barWidth}
-              barBorderRadius={5}
-              spacing={getWidthSpace(selectedIndexCalories).spacing}
-              noOfSections={4}
-              xAxisThickness={0}
-              yAxisThickness={0}
-              xAxisLabelTextStyle={{color: 'gray', fontSize: 11}}
-              yAxisLabelTextStyle={{color: 'gray'}}
-              isAnimated
-              animationDuration={500}
-              frontColor={'#ff911b'}
-              renderTooltip={(item, index) => {
-                return (
-                  <View
-                    style={{
-                      marginBottom: -10,
-                      marginLeft: -6,
-                      backgroundColor: '#00ec61',
-                      paddingHorizontal: 6,
-                      paddingVertical: 4,
-                      borderRadius: 4,
-                      borderColor: 'white',
-                      borderWidth:1
-                    }}>
-                    <Text style={{color: 'white', fontWeight: 'bold', fontSize: 16}}>Calories: {item.value}</Text>
-                  </View>
-                );
-              }}
-            />
-           
-          </>
-        ) : (
-          <View style={styles.noDataContainer}>
-            <Text style={styles.noDataText}>No data available</Text>
-          </View>
-        )}
+        <CaloriesChart data={workouts}/>
       </View>
 
 

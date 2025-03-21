@@ -187,7 +187,7 @@ const Exercise = ({day}) => {
         </View>
 
         {selectedExercises.length > 0 && (
-          <TouchableOpacity style={{alignItems: 'flex-end'}} onPress={saveExerciseData}>
+          <TouchableOpacity style={{alignItems: 'flex-end', marginTop: 20}} onPress={saveExerciseData}>
             <AntDesign name="checkcircle" size={40} color="#6c63ff" />
           </TouchableOpacity>
         )}

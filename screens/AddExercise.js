@@ -6,7 +6,8 @@ import { getAuth } from "firebase/auth";
 import { get, getDatabase, ref, set } from "firebase/database";
 
 
-const AddExercise = () => {
+const AddExercise = ({route}) => {
+  const {day, fetchExerciseData} = route.params
   const [exercise, setExercise] = useState();
     
   // Auth for saving data
@@ -15,12 +16,6 @@ const AddExercise = () => {
   const date = new Date().toISOString().split('T')[0];
   
   const {goBack} = useNavigation()
-
-  const currentDate = new Date().getDay() -1
-
-  const day = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][currentDate];
-
-  console.log(day)
 
 
   const saveExerciseData = async () => {
@@ -41,9 +36,11 @@ const AddExercise = () => {
 
           // Save the updated list of exercises
           await set(exerciseRef, updatedExercises);
+          fetchExerciseData()
 
       } catch {
         await set(exerciseRef, [exercise]);
+        fetchExerciseData()
       }
       
       Alert.alert('Success', 'Exercises saved successfully!');

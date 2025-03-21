@@ -33,7 +33,7 @@ const Quickstart = ({day, handleDaySelect}) => {
 
 
 
-  console.log(day)
+  console.log(day, "--------")
 
 
   const fetchExerciseData = async () => {
@@ -70,7 +70,7 @@ const Quickstart = ({day, handleDaySelect}) => {
           <Text style={styles.heading}>Exercise</Text>
 
           <View style={{ flexDirection: "row", gap: 12 }}>
-            <TouchableOpacity onPress={() => navigation.navigate('AddTemplate')}>
+            <TouchableOpacity onPress={() => navigation.navigate('AddTemplate', {day: day, fetchExerciseData: fetchExerciseData})}>
               <AntDesign name="plus" size={24} color="gray" />
             </TouchableOpacity>
 
@@ -124,7 +124,7 @@ const Quickstart = ({day, handleDaySelect}) => {
                   padding: 12,
                   width: screenWidth / 2 - 27,
                 }}
-                onPress={()=>navigation.navigate('StartWorkout', { name: item })}
+                onPress={()=>navigation.navigate('StartWorkout', { name: item, day: day, fetchExerciseData: fetchExerciseData })}
               >
                 <Text>{item}</Text>
               </TouchableOpacity>

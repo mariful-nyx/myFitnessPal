@@ -247,8 +247,7 @@ const StopwatchScreen = () => {
           steps,
           calories,
           distance,
-          timestamp: new Date().toISOString(),
-          img: uri
+          timestamp: new Date().toISOString()
         }])
       }
       

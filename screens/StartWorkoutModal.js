@@ -17,7 +17,7 @@ import { getAuth } from "firebase/auth";
 import { Calendar } from "react-native-calendars";
 
 const StartWorkoutModal = ({route}) => {
-  const {name} = route.params
+  const {name, day, fetchExerciseData} = route.params
   const [kg, setKg] = useState();
   const [reps, setReps] = useState(0);
   const [weight, setWeight] = useState(0);
@@ -109,19 +109,22 @@ const StartWorkoutModal = ({route}) => {
   
     try {
       const db = getDatabase();
-      const exerciseRef = ref(db, `users/${userId}/exercises/`);
+      const exerciseRef = ref(db, `users/${userId}/exercises/${day}`);
   
       // Fetch the current exercises
       const snapshot = await get(exerciseRef);
       const existingExercises = snapshot.exists() ? snapshot.val() : [];
+      console.log(existingExercises)
   
-      // Filter out the exercise with the given ID
-      const updatedExercises = existingExercises.filter(exercise => exercise !== name);
+      const updatedExercises = existingExercises?.filter((exercise) => exercise !== name)
   
       // Save the updated list of exercises without the deleted one
       await set(exerciseRef, updatedExercises);
 
       navigation.goBack()
+      
+      fetchExerciseData()
+
     } catch (error) {
       console.error('Error deleting Exercise:', error);
       Alert.alert('Error', 'Failed to delete Exercise data');
@@ -260,6 +263,10 @@ const StartWorkoutModal = ({route}) => {
           ))}
         </ScrollView>
 
+        <TouchableOpacity onPress={handleDelete} style={styles.dangerBtn}>
+          <Text style={styles.dangerBtnText}>Delete exercise</Text>
+        </TouchableOpacity>
+
 
       </View>
     </ScrollView>
@@ -297,7 +304,7 @@ const styles = StyleSheet.create({
   },
   addButtonText: { color: "#ffffff", fontSize: 16, fontWeight: "bold" },
   outlineBtn: {borderWidth:1, borderColor: '#6c63ff', paddingVertical: 12, alignItems: 'center', borderRadius: 12},
-  dangerBtn: {borderWidth:1, borderColor: 'red', paddingVertical: 12, alignItems: 'center', borderRadius: 12},
-
+  dangerBtn: {borderWidth:1, borderColor: 'red', paddingVertical: 12, alignItems: 'center', borderRadius: 12, marginTop: 60, marginBottom: 50},
+  dangerBtnText: {color: 'red'}
 
 });
