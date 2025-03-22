@@ -384,12 +384,12 @@ const HomeScreen = ({ route }) => {
 
       <View style={styles.graphContainer}>
       
-        <StepsChart data={workouts}/>
+        <StepsChart data={workouts} refresh={fetchExerciseData}/>
       </View>
 
       
-      <View style={styles.graphContainer}>
-        <CaloriesChart data={workouts}/>
+      <View style={styles.graphContainer} >
+        <CaloriesChart data={workouts} refresh={fetchExerciseData}/>
       </View>
 
 

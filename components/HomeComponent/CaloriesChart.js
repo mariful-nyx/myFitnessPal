@@ -1,24 +1,35 @@
-import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { BarChart as BarChartRNG } from "react-native-gifted-charts";
 import { caloriesSample } from "../../screens/sampleItems";
 import { formatMonth, getWeekday, getWidthSpace } from "./StepsChart";
 import moment from "moment";
+import AntDesign from '@expo/vector-icons/AntDesign';
+import { useNavigation } from "@react-navigation/native";
+import { getAuth } from "firebase/auth";
+
+
+
 
 const screenWidth = Dimensions.get("window").width;
 
-export default function CaloriesChart({ data }) {
-
+export default function CaloriesChart({ data, refresh }) {
+  const navigation = useNavigation()
 
   const [selectedIndexCalories, setSelectedIndexCalories] = useState(0);
 
-
-  const date = new Date().toISOString().split("T")[0];
+  const date = new Date().toISOString().split('T')[0];
   const [selectedDate, setSelectedDate] = useState(date);
 
-  const [selectedIndexStep, setSelectedIndexStep] = useState(0);
   const [calories, setcalories] = useState();
+
+
+  // Auth for saving data
+  const auth = getAuth();
+  const userId = auth.currentUser?.uid;
+
+
 
   useEffect(() => {
     if (data) {
@@ -95,9 +106,17 @@ export default function CaloriesChart({ data }) {
     }
   }, [data]);
 
+
+  const handleAddCalories = () => {
+    navigation.navigate('AddData', {name: 'Calories', refresh: refresh})
+  }
+
   return (
     <View>
       <Text style={styles.graphTitle}>Daily Calories Burned</Text>
+      <TouchableOpacity onPress={handleAddCalories} style={styles.addStepBtn}>
+        <AntDesign name="plus" size={24} color="#6c63ff" />
+      </TouchableOpacity>
       <>
         <SegmentedControl
           values={["D", "w", "M", "6M", "Y"]}
@@ -164,4 +183,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: "center",
   },
+  addStepBtn: {
+    alignItems: 'flex-end'
+  }
 });

@@ -1,8 +1,12 @@
-import { Text, StyleSheet, View, Dimensions } from "react-native";
+import { Text, StyleSheet, View, Dimensions, TouchableOpacity } from "react-native";
 import React, { Component, useEffect, useState } from "react";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { BarChart as BarChartRNG } from "react-native-gifted-charts";
 import moment from "moment/moment";
+import AntDesign from '@expo/vector-icons/AntDesign';
+import { getAuth } from "firebase/auth";
+import { useNavigation } from "@react-navigation/native";
+import { get, getDatabase, ref, set } from "firebase/database";
 
 
 
@@ -53,8 +57,10 @@ export const formatMonth = (month) => {
 
 
 
-export default function StepsChart({ data }) {
-  const date = new Date().toISOString().split("T")[0];
+export default function StepsChart({ data, refresh }) {
+  const navigation = useNavigation()
+
+  const date = new Date().toISOString().split('T')[0];
   const [selectedDate, setSelectedDate] = useState(date);
 
   const [selectedIndexStep, setSelectedIndexStep] = useState(0);
@@ -142,10 +148,20 @@ export default function StepsChart({ data }) {
   }, [data]);
 
 
+  const handleAddStep = () => {
+    navigation.navigate('AddData', {name: 'Steps', refresh: refresh })
+  }
+
+
+
+
 
   return (
     <View>
       <Text style={styles.graphTitle}>Daily steps</Text>
+      <TouchableOpacity onPress={handleAddStep} style={styles.addStepBtn}>
+        <AntDesign name="plus" size={24} color="#6c63ff" />
+      </TouchableOpacity>
       <View
         style={{
           width: "100%",
@@ -229,4 +245,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: "center",
   },
+  addStepBtn: {
+    alignItems: 'flex-end'
+  }
+
 });

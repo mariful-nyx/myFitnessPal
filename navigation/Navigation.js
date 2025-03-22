@@ -25,6 +25,7 @@ import StartWorkoutModal from '../screens/StartWorkoutModal';
 import AddExercise from '../screens/AddExercise';
 import ViewSavedRun from '../screens/ViewSavedRun';
 import TemplateView from '../screens/TemplateView';
+import AddData from '../components/HomeComponent/AddData';
 
 // Create navigators
 const Stack = createStackNavigator();
@@ -149,6 +150,11 @@ export default function Navigation() {
               <Stack.Screen 
                 name='StartWorkout' 
                 component={StartWorkoutModal} 
+                options={{headerShown: false}} 
+              />
+              <Stack.Screen 
+                name='AddData' 
+                component={AddData} 
                 options={{headerShown: false}} 
               />
             </Stack.Group>

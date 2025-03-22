@@ -158,11 +158,11 @@ const ViewSavedRun = () => {
                 }}
               >
                 <View style={{ alignItems: "center" }}>
-                  <Text style={styles.value}>{item.distance}</Text>
+                  <Text style={styles.value}>{item.distance.toFixed(2)}</Text>
                   <Text style={styles.label}>Distance</Text>
                 </View>
                 <View style={{ alignItems: "center" }}>
-                  <Text style={styles.value}>{item.duration}</Text>
+                  <Text style={styles.value}>{item.duration.toFixed(2)}</Text>
                   <Text style={styles.label}>Duration</Text>
                 </View>
               </View>
