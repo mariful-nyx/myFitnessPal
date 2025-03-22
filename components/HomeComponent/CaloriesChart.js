@@ -22,7 +22,7 @@ export default function CaloriesChart({ data }) {
 
   useEffect(() => {
     if (data) {
-      const newcalories = data[selectedDate].map((item) => ({
+      const newcalories = data[selectedDate]?.map((item) => ({
         value: item.calories,
         label: moment(item.timestamp).format("ha"),
       }));
@@ -157,4 +157,11 @@ export default function CaloriesChart({ data }) {
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  graphTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+    textAlign: "center",
+  },
+});

@@ -64,7 +64,7 @@ export default function StepsChart({ data }) {
   useEffect(()=>{
 
     if(data){
-      const newSteps = data[selectedDate].map(item => ({
+      const newSteps = data[selectedDate]?.map(item => ({
         value: item.steps,
         label: moment(item.timestamp).format('ha')
       }));

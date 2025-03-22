@@ -61,9 +61,9 @@ export default function SavedMealsScreen({ navigation }) {
       });
 
       // Remove duplicates and sort meals alphabetically by mealName
-      const uniqueMeals = Array.from(new Set(allMeals.map((meal) => JSON.stringify(meal))))
-        .map((meal) => JSON.parse(meal))
-        .sort((a, b) => a.mealName.localeCompare(b.mealName));
+      const uniqueMeals = Array.from(new Set(allMeals?.map((meal) => JSON.stringify(meal))))
+        ?.map((meal) => JSON.parse(meal))
+        ?.sort((a, b) => a.mealName.localeCompare(b.mealName));
 
       setMealLogs(uniqueMeals); // Update state with the unique meals
     });

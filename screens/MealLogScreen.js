@@ -314,7 +314,7 @@ export default function MealLogScreen({ navigation, route }) {
 
         {/* Meal List */}
         <View style={styles.mealListContainer}>
-          {meals[category].map((item) => (
+          {meals[category]?.map((item) => (
             <View key={item.id} style={styles.mealItem}>
               <Text style={styles.mealText}>
                 {item.mealName} - {item.calories} cal, {item.weight} g
